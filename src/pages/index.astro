@@ -1,0 +1,168 @@
+---
+import '../styles/global.css';
+
+const title = 'Lenzatic — Cinematography by Roberto Lee Cortes';
+const description =
+  'Lenzatic is the cinematography portfolio of Roberto Lee Cortes. New site coming soon.';
+const contact = {
+  name: 'Roberto Lee Cortes',
+  phone: '(516) 857-0317',
+  phoneHref: 'tel:+15168570317',
+  email: 'lenzatic@gmail.com',
+};
+const headline = 'Coming Soon';
+const year = new Date().getFullYear();
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <meta name="theme-color" content="#0b0e12" />
+    <link rel="canonical" href="https://lenzatic.com/" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://lenzatic.com/" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content="https://lenzatic.com/images/og.jpg" />
+    <meta name="twitter:card" content="summary_large_image" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Jost:wght@300;400;500&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="preload" as="image" href="/images/hero.webp" imagesrcset="/images/hero-1000.webp 1000w, /images/hero.webp 2000w" imagesizes="100vw" />
+
+    <!-- Turn on animations only when JS runs and the visitor hasn't asked for reduced motion -->
+    <script is:inline>
+      if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        document.documentElement.classList.add('js');
+      }
+    </script>
+  </head>
+
+  <body class="overflow-hidden font-sans">
+    <!-- Preloader: two shutters that part like a letterbox opening -->
+    <div id="preloader" class="pointer-events-none fixed inset-0 z-50 hidden [.js_&]:block" aria-hidden="true">
+      <div data-shutter="top" class="absolute inset-x-0 top-0 h-1/2 bg-ink"></div>
+      <div data-shutter="bottom" class="absolute inset-x-0 bottom-0 h-1/2 bg-ink"></div>
+      <div data-loader-content class="absolute inset-0 flex flex-col items-center justify-center gap-6">
+        <div class="relative w-[min(64vw,420px)] overflow-hidden">
+          <div data-loader-logo class="logo-mask w-full bg-mist"></div>
+          <div data-loader-sheen class="logo-mask absolute inset-0 w-full bg-gradient-to-r from-transparent via-ochre to-transparent bg-[length:40%_100%] bg-no-repeat opacity-80"></div>
+        </div>
+        <div class="h-px w-[min(64vw,420px)] bg-mist/15">
+          <div data-loader-bar class="h-px w-full origin-left scale-x-0 bg-ochre"></div>
+        </div>
+        <p data-loader-tc class="font-mono text-[11px] tracking-[0.3em] text-haze">00:00:00:00</p>
+      </div>
+    </div>
+
+    <main class="relative h-svh min-h-[560px] w-full overflow-hidden">
+      <!-- Hero image -->
+      <div data-hero-media class="absolute inset-0 will-change-transform">
+        <img
+          src="/images/hero.jpg"
+          srcset="/images/hero-1000.webp 1000w, /images/hero.webp 2000w"
+          sizes="100vw"
+          alt="Roberto Lee Cortes holding a cinema camera at a chain-link gate in the desert at golden hour"
+          class="h-full w-full object-cover object-[52%_50%]"
+          fetchpriority="high"
+          decoding="async"
+        />
+      </div>
+
+      <!-- Grade overlays for legibility -->
+      <div class="pointer-events-none absolute inset-0 bg-gradient-to-t from-ink via-ink/15 to-ink/40"></div>
+      <div class="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_45%,rgba(11,14,18,0.75)_100%)]"></div>
+      <div class="pointer-events-none absolute inset-0 bg-gradient-to-r from-ink/60 via-transparent to-transparent"></div>
+
+      <!-- Viewfinder frame -->
+      <div data-frame class="pointer-events-none absolute inset-4 sm:inset-8" aria-hidden="true">
+        <span data-reveal data-corner class="absolute left-0 top-0 h-6 w-6 border-l border-t border-mist/60"></span>
+        <span data-reveal data-corner class="absolute right-0 top-0 h-6 w-6 border-r border-t border-mist/60"></span>
+        <span data-reveal data-corner class="absolute bottom-0 left-0 h-6 w-6 border-b border-l border-mist/60"></span>
+        <span data-reveal data-corner class="absolute bottom-0 right-0 h-6 w-6 border-b border-r border-mist/60"></span>
+        <span data-reveal data-corner class="absolute left-1/2 top-1/2 hidden h-4 w-4 -translate-x-1/2 -translate-y-1/2 sm:block">
+          <span class="absolute left-1/2 top-0 h-full w-px bg-mist/40"></span>
+          <span class="absolute left-0 top-1/2 h-px w-full bg-mist/40"></span>
+        </span>
+      </div>
+
+      <!-- Top HUD -->
+      <header class="absolute inset-x-0 top-0 z-10 flex items-start justify-between px-8 pt-9 sm:px-14 sm:pt-14">
+        <div data-reveal class="flex items-center gap-2 font-mono text-[10px] tracking-[0.25em] text-mist/80 sm:text-[11px]">
+          <span class="rec-dot inline-block h-2 w-2 rounded-full bg-[#e5483b]"></span>
+          <span>REC</span>
+          <span data-timecode class="ml-2 hidden tabular-nums text-mist/60 sm:inline">00:00:00:00</span>
+        </div>
+        <h1 class="absolute right-8 top-9 sm:left-1/2 sm:right-auto sm:top-14 sm:-translate-x-1/2">
+          <span class="sr-only">Lenzatic</span>
+          <span data-reveal data-hero-logo class="logo-mask block w-[min(38vw,220px)] bg-mist"></span>
+        </h1>
+        <div data-reveal class="hidden text-right font-mono text-[11px] tracking-[0.25em] text-mist/60 md:block">
+          <p>23.976 FPS</p>
+          <p>2.39 : 1</p>
+        </div>
+      </header>
+
+      <!-- Bottom content -->
+      <section class="absolute inset-x-0 bottom-0 z-10 flex flex-col gap-10 px-8 pb-10 sm:px-14 sm:pb-16 lg:flex-row lg:items-end lg:justify-between">
+        <div class="max-w-2xl">
+          <p data-reveal class="mb-4 flex items-center gap-3 font-mono text-[11px] uppercase tracking-[0.3em] text-ochre">
+            <span data-rule class="inline-block h-px w-10 origin-left bg-ochre"></span>
+            Cinematography Portfolio
+          </p>
+          <h2 class="text-[clamp(2.75rem,9vw,7.5rem)] font-light uppercase leading-[0.9] tracking-[0.12em] text-mist" aria-label={headline}>
+            {headline.split(' ').map((word) => (
+              <span class="inline-block overflow-hidden whitespace-nowrap pb-2 pr-[0.3em] align-bottom" aria-hidden="true">
+                {[...word].map((ch) => (
+                  <span data-char class="inline-block">{ch}</span>
+                ))}
+              </span>
+            ))}
+          </h2>
+          <p data-reveal class="mt-5 max-w-md text-base font-light leading-relaxed text-mist/75 sm:text-lg">
+            A new collection of cinematic work is in post&#8209;production. Until then, let's talk about your next project.
+          </p>
+        </div>
+
+        <address data-reveal class="not-italic lg:text-right">
+          <p class="mb-3 font-mono text-[11px] uppercase tracking-[0.3em] text-haze">Contact</p>
+          <p class="text-lg font-normal tracking-[0.08em] text-mist sm:text-xl">{contact.name}</p>
+          <p class="mt-2 text-base font-light text-mist/80">
+            <a class="link-draw pb-0.5" href={contact.phoneHref}>{contact.phone}</a>
+          </p>
+          <p class="text-base font-light text-mist/80">
+            <a class="link-draw pb-0.5" href={`mailto:${contact.email}`}>{contact.email}</a>
+          </p>
+          <a
+            data-magnetic
+            href={`mailto:${contact.email}?subject=Project%20inquiry`}
+            class="group mt-6 inline-flex items-center gap-3 border border-mist/40 px-6 py-3 font-mono text-[11px] uppercase tracking-[0.3em] text-mist backdrop-blur-sm transition-colors duration-300 hover:border-ochre hover:bg-ochre hover:text-ink"
+          >
+            Get in touch
+            <span class="transition-transform duration-300 group-hover:translate-x-1" aria-hidden="true">&rarr;</span>
+          </a>
+        </address>
+      </section>
+
+      <p data-reveal class="absolute bottom-3 left-1/2 z-10 -translate-x-1/2 whitespace-nowrap font-mono text-[9px] tracking-[0.3em] text-mist/40 sm:bottom-6">
+        &copy; {year} LENZATIC
+      </p>
+    </main>
+
+    <div class="grain hidden [.js_&]:block" aria-hidden="true"></div>
+
+    <script>
+      import '../scripts/landing.ts';
+    </script>
+  </body>
+</html>
