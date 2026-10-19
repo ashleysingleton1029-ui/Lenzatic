@@ -3,7 +3,7 @@ import { defineConfig } from 'astro/config';
 import tailwindcss from '@tailwindcss/vite';
 
 export default defineConfig({
-  site: 'https://lenzatic.com',
+  site: 'https://www.lenzatic.com',
   vite: {
     plugins: [tailwindcss()],
   },
