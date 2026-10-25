@@ -6,8 +6,6 @@ const description =
   'Lenzatic is the cinematography portfolio of Roberto Lee Cortes. New site coming soon.';
 const contact = {
   name: 'Roberto Lee Cortes',
-  phone: '(516) 857-0317',
-  phoneHref: 'tel:+15168570317',
   email: 'lenzatic@gmail.com',
 };
 const headline = 'Coming Soon';
@@ -138,9 +136,6 @@ const year = new Date().getFullYear();
           <p class="mb-3 font-mono text-[11px] uppercase tracking-[0.3em] text-haze">Contact</p>
           <p class="text-lg font-normal tracking-[0.08em] text-mist sm:text-xl">{contact.name}</p>
           <p class="mt-2 text-base font-light text-mist/80">
-            <a class="link-draw pb-0.5" href={contact.phoneHref}>{contact.phone}</a>
-          </p>
-          <p class="text-base font-light text-mist/80">
             <a class="link-draw pb-0.5" href={`mailto:${contact.email}`}>{contact.email}</a>
           </p>
           <a
