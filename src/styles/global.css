@@ -120,13 +120,13 @@ header:has(.link-draw:hover, .link-draw:focus-visible) {
 .arrow-btn {
   position: relative;
   display: block;
-  width: 30px;
-  height: 25px;
+  width: 26px;
+  height: 22px;
   color: #fff;
   -webkit-tap-highlight-color: transparent;
 }
 @media (min-width: 768px) {
-  .arrow-btn { width: 36px; height: 30px; }
+  .arrow-btn { width: 30px; height: 25px; }
 }
 .arrow-btn svg {
   position: absolute;
@@ -145,8 +145,7 @@ header:has(.link-draw:hover, .link-draw:focus-visible) {
   stroke-width: 1;
   stroke-linejoin: miter;
   vector-effect: non-scaling-stroke;
-  opacity: 0.55;
-  transition: stroke 0.35s ease, opacity 0.35s ease;
+  transition: stroke 0.35s ease;
 }
 .arrow-btn .arrow {
   fill: currentColor;
@@ -156,7 +155,6 @@ header:has(.link-draw:hover, .link-draw:focus-visible) {
 .arrow-btn:hover .frame,
 .arrow-btn:focus-visible .frame {
   stroke: var(--color-gold);
-  opacity: 1;
 }
 .arrow-btn:hover .arrow,
 .arrow-btn:focus-visible .arrow {
@@ -170,7 +168,11 @@ header:has(.link-draw:hover, .link-draw:focus-visible) {
 }
 /* The reel's bottom bar uses a difference blend; switch it off while an arrow
    is hovered so the gold shows true instead of being inverted. */
-.reel-bar:has(.arrow-btn:hover, .arrow-btn:focus-visible) {
+/* Like the logo, the arrows use a difference blend so the video shows through
+   them (the reel bar already blends; the viewer arrows get .blend-diff). */
+.blend-diff { mix-blend-mode: difference; }
+.reel-bar:has(.arrow-btn:hover, .arrow-btn:focus-visible),
+.blend-diff:has(.arrow-btn:hover, .arrow-btn:focus-visible) {
   mix-blend-mode: normal;
 }
 
