@@ -66,6 +66,9 @@ body {
 }
 
 .rec-dot {
+  /* deep taillight red: lit core with a glow in the darker lens red */
+  background: #9a1d15;
+  box-shadow: 0 0 5px 1px rgb(109 35 25 / 0.9), inset 0 0 1px rgb(255 90 70 / 0.35);
   animation: rec 1.6s ease-in-out infinite;
 }
 

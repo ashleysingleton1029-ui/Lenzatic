@@ -8,6 +8,22 @@ const { current = 'home', fixed = false } = Astro.props;
 const email = 'lenzatic@gmail.com';
 ---
 
+<!-- REC + timecode (tablets up). Kept outside the header so its red dot is never colour-inverted by the header blend. -->
+<div
+  class:list={[
+    fixed ? 'fixed' : 'absolute',
+    'left-0 top-0 z-[4600] hidden pl-12 pt-10 text-white sm:block',
+  ]}
+>
+  <div class="overflow-hidden">
+    <div data-intro-up class="flex items-center gap-2 text-[11px] tracking-[0.25em]">
+      <span class="rec-dot inline-block h-2 w-2 rounded-full"></span>
+      <span>REC</span>
+      <span data-timecode class="ml-2 opacity-70">{[..."00:00:00:00"].map((ch) => <span class={ch === ':' ? 'inline-block w-[0.4em] text-center' : 'digit'}>{ch}</span>)}</span>
+    </div>
+  </div>
+</div>
+
 <header
   class:list={[
     // Fixed (scrolling pages): a solid black bar so the links never blend with what passes under them.
@@ -15,15 +31,6 @@ const email = 'lenzatic@gmail.com';
     'inset-x-0 top-0 z-[4500] flex items-start justify-between px-6 pt-7 text-white sm:px-12 sm:pt-10',
   ]}
 >
-  <!-- REC + timecode (from small tablets up; phones show the logo here instead) -->
-  <div class="hidden overflow-hidden sm:block">
-    <div data-intro-up class="flex items-center gap-2 text-[11px] tracking-[0.25em]">
-      <span class="rec-dot inline-block h-2 w-2 rounded-full bg-white"></span>
-      <span>REC</span>
-      <span data-timecode class="ml-2 opacity-70">{[..."00:00:00:00"].map((ch) => <span class={ch === ':' ? 'inline-block w-[0.4em] text-center' : 'digit'}>{ch}</span>)}</span>
-    </div>
-  </div>
-
   <a
     href="/"
     class="overflow-hidden sm:absolute sm:left-1/2 sm:top-10 sm:-translate-x-1/2"
@@ -32,7 +39,7 @@ const email = 'lenzatic@gmail.com';
     <span data-intro-up class="logo-mask block w-[min(32vw,200px)] bg-white"></span>
   </a>
 
-  <nav class="flex items-start gap-5 sm:gap-8" aria-label="Site">
+  <nav class="ml-auto flex items-start gap-5 sm:gap-8" aria-label="Site">
     <div class="overflow-hidden">
       <a
         data-intro-up
