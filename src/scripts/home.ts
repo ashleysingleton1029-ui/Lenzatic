@@ -17,18 +17,28 @@ const titles = videos.map((v) => (v.getAttribute('aria-label') || '').replace(/ 
 const count = clips.length;
 const pad = (n: number) => String(n).padStart(2, '0');
 
-// ---------- Clip length ----------
-// A clip can be trimmed on the site with data-length (seconds); otherwise its full length is used.
+// ---------- Clip trim ----------
+// A clip can be trimmed on the site: data-start (seconds in) and data-length
+// (seconds to play). Otherwise the whole clip plays from the start.
+const clipStart = (v: HTMLVideoElement) => Number(v.dataset.start) || 0;
 const clipLength = (v: HTMLVideoElement) => {
   const full = Number.isFinite(v.duration) && v.duration > 1 ? v.duration : 5;
   const cap = Number(v.dataset.length);
-  return cap > 0 ? Math.min(cap, full) : full;
+  const left = full - clipStart(v);
+  return cap > 0 ? Math.min(cap, left) : left;
 };
-// Trimmed clips loop back to the start at their cut point.
+/** Time into the trimmed section. */
+const clipTime = (v: HTMLVideoElement) => Math.max(0, (v.currentTime || 0) - clipStart(v));
+const rewind = (v: HTMLVideoElement) => {
+  if (v.readyState > 0) v.currentTime = clipStart(v);
+};
+// Trimmed clips start at their in-point and loop back at their out-point.
 videos.forEach((v) => {
-  if (!v.dataset.length) return;
+  if (!v.dataset.start && !v.dataset.length) return;
+  v.addEventListener('loadedmetadata', () => rewind(v));
   v.addEventListener('timeupdate', () => {
-    if (v.currentTime >= clipLength(v)) v.currentTime = 0;
+    const t = v.currentTime - clipStart(v);
+    if (t >= clipLength(v) || t < -0.1) rewind(v);
   });
 });
 
@@ -143,7 +153,7 @@ function select(next: number) {
   current = next;
   clipStartedAt = performance.now();
   advancing = false;
-  if (videos[next].readyState > 0) videos[next].currentTime = 0;
+  rewind(videos[next]);
 
   markTicks(next);
   rollCounter(next + 1, dir);
@@ -244,7 +254,7 @@ window.addEventListener('keydown', (e) => {
     e.preventDefault();
     autoPlay = !autoPlay;
     if (autoPlay) {
-      clipStartedAt = performance.now() - (videos[current].currentTime || 0) * 1000;
+      clipStartedAt = performance.now() - clipTime(videos[current]) * 1000;
       play(current);
     } else videos[current].pause();
   }
@@ -275,7 +285,7 @@ gsap.ticker.add(() => {
   const v = videos[current];
   const length = clipLength(v);
   const playing = !v.paused && v.readyState > 2;
-  const t = playing ? v.currentTime : (performance.now() - clipStartedAt) / 1000;
+  const t = playing ? clipTime(v) : (performance.now() - clipStartedAt) / 1000;
   const progress = Math.min(1, Math.max(0, t / (length - LEAD)));
   const now = performance.now();
   if (!started || !autoPlay || holding || document.hidden || now < freeAt) return;
@@ -293,7 +303,7 @@ const toTimecode = (sec: number) => {
   return `${pad(Math.floor(frames / 86400))}:${pad(Math.floor(frames / 1440) % 60)}:${pad(Math.floor(frames / 24) % 60)}:${pad(frames % 24)}`;
 };
 gsap.ticker.add(() => {
-  const tc = toTimecode(videos[current].currentTime || 0);
+  const tc = toTimecode(clipTime(videos[current]));
   tcSlots.forEach((el, k) => {
     if (el.textContent !== tc[k]) el.textContent = tc[k];
   });
@@ -345,7 +355,7 @@ if (!animate) {
       .add(() => {
         started = true;
         clipStartedAt = performance.now();
-        if (videos[0].readyState > 0) videos[0].currentTime = 0;
+        rewind(videos[0]);
       }, '-=0.6');
   });
 }
