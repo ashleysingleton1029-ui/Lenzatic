@@ -8,12 +8,13 @@ export function getStaticPaths() {
 }
 
 const { gallery } = Astro.props as { gallery: Gallery };
-const { slug, title, hero, frames } = gallery;
+const { slug, title, side, hero, frames } = gallery;
+const stripLeft = side === 'left';
 const pageTitle = `${title} — Lenzatic`;
 const description = `${title} cinematography by Roberto Lee Cortes.`;
 
-// Place the hero subject toward the left on any screen (24% across on phones,
-// 28% on larger screens; see .gallery-hero in global.css). The image box is 140%
+// Place the hero subject on the side opposite the film strip (see .gallery-hero
+// in global.css for how far across). The image box is 140%
 // wide and shifted left so (subject position x box width) lands on that target.
 const BOX = 140;
 const shift = (hero.subjectX * BOX) / 100;
@@ -41,7 +42,7 @@ const heroStyle = `left:calc(var(--hero-target) - ${shift}%);width:${BOX}%;max-w
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Jost:wght@300;400;500&display=swap" rel="stylesheet" />
     <link rel="preload" as="font" type="font/woff2" href="/fonts/Salena.woff2" crossorigin />
-    <link rel="preload" as="image" href={`/images/${slug}/hero.webp`} imagesrcset={`/images/${slug}/hero-1280.webp 1280w, /images/${slug}/hero.webp 2560w`} imagesizes="140vw" />
+    <link rel="preload" as="image" href={`/images/${slug}/hero.webp`} imagesrcset={`/images/${slug}/hero-1280.webp 1280w, /images/${slug}/hero.webp ${hero.width}w`} imagesizes="140vw" />
 
     <script is:inline>
       if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
@@ -53,12 +54,12 @@ const heroStyle = `left:calc(var(--hero-target) - ${shift}%);width:${BOX}%;max-w
   <body class="overflow-hidden font-display uppercase text-white" style="background:#000">
     <Header current="work" fixed />
 
-    <main class="relative h-svh min-h-[520px] w-full overflow-hidden">
+    <main class:list={['relative h-svh min-h-[520px] w-full overflow-hidden', stripLeft && 'strip-left']}>
       <!-- Hero: full screen, subject on the left -->
       <div data-hero class="absolute inset-0">
         <img
           src={`/images/${slug}/hero.jpg`}
-          srcset={`/images/${slug}/hero-1280.webp 1280w, /images/${slug}/hero.webp 2560w`}
+          srcset={`/images/${slug}/hero-1280.webp 1280w, /images/${slug}/hero.webp ${hero.width}w`}
           sizes="140vw"
           alt={hero.alt}
           fetchpriority="high"
@@ -68,11 +69,11 @@ const heroStyle = `left:calc(var(--hero-target) - ${shift}%);width:${BOX}%;max-w
         />
       </div>
       <!-- Fade to black toward the film strip -->
-      <div class="pointer-events-none absolute inset-0 bg-[linear-gradient(90deg,transparent_0%,transparent_38%,rgba(0,0,0,0.7)_52%,#000_62%)] md:bg-[linear-gradient(90deg,transparent_0%,transparent_34%,rgba(0,0,0,0.65)_56%,#000_72%)]"></div>
+      <div class="gallery-fade pointer-events-none absolute inset-0"></div>
       <div class="pointer-events-none absolute inset-0 bg-gradient-to-b from-black/45 via-transparent to-black/60"></div>
 
       <!-- Title -->
-      <div class="absolute bottom-0 left-0 z-10 px-6 pb-6 sm:px-12 sm:pb-10">
+      <div class:list={['absolute bottom-0 z-10 px-6 pb-6 sm:px-12 sm:pb-10', stripLeft ? 'right-0 text-right' : 'left-0']}>
         <div class="overflow-hidden">
           <a data-intro-up href="/work" class="link-draw mb-3 inline-block text-[10px] tracking-[0.25em] opacity-70 sm:text-[11px]">&larr;&nbsp; All work</a>
         </div>

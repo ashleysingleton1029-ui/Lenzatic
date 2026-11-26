@@ -206,11 +206,29 @@ header:has(.link-draw:hover, .link-draw:focus-visible) {
   clip-path: inset(0% 0% 0% 100%);
 }
 
-/* ---------- Gallery page: hero subject position ---------- */
+/* ---------- Gallery page: hero subject position + fade ---------- */
+/* Strip on the right (default): subject sits left, fade to black toward the right. */
 .gallery-hero { --hero-target: 24%; }
+.gallery-fade { background: linear-gradient(90deg, transparent 0%, transparent 38%, rgba(0,0,0,0.7) 52%, #000 62%); }
 @media (min-width: 768px) {
   .gallery-hero { --hero-target: 28%; }
+  .gallery-fade { background: linear-gradient(90deg, transparent 0%, transparent 34%, rgba(0,0,0,0.65) 56%, #000 72%); }
 }
+/* Strip on the left: everything mirrors. */
+.strip-left .gallery-hero { --hero-target: 76%; }
+.strip-left .gallery-fade { background: linear-gradient(270deg, transparent 0%, transparent 38%, rgba(0,0,0,0.7) 52%, #000 62%); }
+@media (min-width: 768px) {
+  .strip-left .gallery-hero { --hero-target: 72%; }
+  .strip-left .gallery-fade { background: linear-gradient(270deg, transparent 0%, transparent 34%, rgba(0,0,0,0.65) 56%, #000 72%); }
+}
+.strip-left .film { right: auto; left: calc(var(--ruler) + 10px); }
+@media (min-width: 768px) {
+  .strip-left .film { left: calc(var(--ruler) + 18px); }
+}
+.strip-left .ruler { right: auto; left: 0; }
+.strip-left .ruler-tick { right: auto; left: 0; }
+.strip-left .ruler-label { right: auto; left: 24px; }
+.strip-left .ruler-readout { right: auto; left: 3px; }
 
 /* ---------- Gallery page: vertical film strip ---------- */
 .film {
@@ -256,11 +274,15 @@ header:has(.link-draw:hover, .link-draw:focus-visible) {
   width: 100%;
   aspect-ratio: 3 / 2;
   flex: none;
+  overflow: hidden;
   cursor: zoom-in;
   background: #050505;
   outline: none;
 }
+/* absolutely placed so a tall (portrait) photo is cropped, never stretches its frame */
 .film-frame img {
+  position: absolute;
+  inset: 0;
   width: 100%;
   height: 100%;
   object-fit: cover;

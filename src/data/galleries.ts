@@ -11,9 +11,13 @@ export interface Frame {
 export interface Gallery {
   slug: string;
   title: string;
+  /** Which side the film strip and ruler sit on (the hero subject goes on the other side). */
+  side: 'left' | 'right';
   hero: {
+    /** Pixel width of hero.webp (for responsive loading). */
+    width: number;
     alt: string;
-    /** Where the subject sits across the photo (0–100). Used to place them on the left. */
+    /** Where the subject sits across the photo (0–100). Used to place them opposite the strip. */
     subjectX: number;
     /** Vertical crop point for the hero (CSS percentage). */
     focusY?: string;
@@ -25,7 +29,9 @@ export const galleries: Gallery[] = [
   {
     slug: 'narrative',
     title: 'Narrative',
+    side: 'right',
     hero: {
+      width: 2560,
       alt: 'Figure in a cybernetic helmet with a glowing orange ring, standing before a hazy golden sea',
       subjectX: 47,
       focusY: '40%',
@@ -55,6 +61,34 @@ export const galleries: Gallery[] = [
       { alt: 'Aerial view of a long bridge stretching across the sea' },
       { alt: 'Aerial view of a cable-stayed bridge over the sea' },
       { alt: 'Masked figure wading through misty golden water' },
+    ],
+  },
+  {
+    slug: 'aerial',
+    title: 'Aerial',
+    side: 'left',
+    hero: {
+      width: 2000,
+      alt: 'Top-down view of a weathered wooden pier with rusted floats, cutting diagonally across dark water',
+      subjectX: 45,
+      focusY: '50%',
+    },
+    frames: [
+      { alt: 'Storm light breaking over a mountain above a desert city' },
+      { alt: 'Pine-covered ridge beneath a granite dome' },
+      { alt: 'Sunlit pines on a steep forested slope' },
+      { alt: 'Road winding through a pine forest, seen from above' },
+      { alt: 'Weathered pier stretching into blue water, seen from above', focus: '50% 40%' },
+      { alt: 'Sandstone peaks catching the last light' },
+      { alt: 'Jagged granite peaks wrapped in mist' },
+      { alt: 'Sun setting behind layered mountain silhouettes' },
+      { alt: 'Las Vegas skyline and tower in golden haze' },
+      { alt: 'Desert city valley at sunset beneath distant mountains' },
+      { alt: 'Dirt road winding across the desert under storm clouds' },
+      { alt: 'Aerial abstract of a snowy shoreline against turquoise water' },
+      { alt: 'Aerial view of a frosted peninsula meeting turquoise water' },
+      { alt: 'Boat carving a white wake across green water, seen from above' },
+      { alt: 'Boat crossing a glassy mountain lake' },
     ],
   },
 ];
