@@ -47,9 +47,9 @@ if (!animate) {
     if (!img) return;
     gsap.fromTo(
       img,
-      { yPercent: -6 },
+      { yPercent: -3 },
       {
-        yPercent: 6,
+        yPercent: 3,
         ease: 'none',
         scrollTrigger: { trigger: strip, start: 'top bottom', end: 'bottom top', scrub: true },
       },
