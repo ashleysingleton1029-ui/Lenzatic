@@ -23,6 +23,7 @@
   --color-mist: #d6dfe0;
   --color-sand: #d9c7a3;
   --color-ochre: #d29a3f;
+  --color-gold: #be9240; /* matches the center logo mark */
   --color-rust: #8a4f16;
 
   --font-sans: "Jost", ui-sans-serif, system-ui, sans-serif;
@@ -81,7 +82,12 @@ body {
 .link-draw:hover,
 .link-draw:focus-visible {
   background-size: 100% 1px;
-  color: var(--color-ochre);
+  color: var(--color-gold);
+}
+/* The header text uses a difference blend; switch it off while the link is
+   hovered so the gold shows true instead of being inverted. */
+header:has(.link-draw:hover, .link-draw:focus-visible) {
+  mix-blend-mode: normal;
 }
 
 /* Elements start hidden and GSAP reveals them. Without JS or with
