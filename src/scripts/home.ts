@@ -15,6 +15,7 @@ const videos = clips.map((c) => $<HTMLVideoElement>('video', c)!);
 const posters = clips.map((c) => $<HTMLImageElement>('[data-poster]', c)!);
 const titles = videos.map((v) => (v.getAttribute('aria-label') || '').replace(/ reel$/, ''));
 const count = clips.length;
+const pad = (n: number) => String(n).padStart(2, '0');
 
 // ---------- Video loading (Cloudflare Stream HLS) ----------
 let hlsLib: Promise<HlsModule['default'] | null> | null = null;
@@ -45,32 +46,47 @@ async function play(i: number) {
   });
 }
 
-// ---------- Rolling text (counter + title) ----------
-function roll(el: HTMLElement | null, text: string, dir: number, delay = 0) {
+// ---------- Rolling text ----------
+// Rolls `el` to `text`. Does nothing when the text is unchanged, so a repeated
+// title (e.g. two "Motorsports" clips) stays still and only the counter moves.
+function roll(el: Element | null, text: string, dir: number, delay = 0) {
   if (!el) return;
+  // If a previous roll is still running, drop anything already on its way out.
+  Array.from(el.children).slice(0, -1).forEach((c) => {
+    gsap.killTweensOf(c);
+    c.remove();
+  });
   const old = el.lastElementChild as HTMLElement | null;
   if (old?.textContent === text) return;
   const next = document.createElement('span');
   next.className = 'block';
   next.textContent = text;
-  if (!animate) {
+  if (!animate || !old) {
     el.replaceChildren(next);
     return;
   }
+  gsap.killTweensOf(old);
   next.style.position = 'absolute';
   next.style.inset = '0';
   el.appendChild(next);
   const opts = { duration: 1, ease: 'expo.inOut', delay };
-  gsap.fromTo(next, { yPercent: 100 * dir }, { yPercent: 0, ...opts, onComplete: () => {
-    next.style.position = '';
-    next.style.inset = '';
-    Array.from(el.children).forEach((c) => c !== next && c.remove());
-  } });
-  if (old) gsap.to(old, { yPercent: -100 * dir, ...opts });
+  gsap.to(old, { yPercent: -100 * dir, ...opts, onComplete: () => old.remove() });
+  gsap.fromTo(next, { yPercent: 100 * dir }, {
+    yPercent: 0,
+    ...opts,
+    onComplete: () => {
+      next.style.position = '';
+      next.style.inset = '';
+    },
+  });
 }
 
+// Counter: each digit rolls on its own, so 03 → 04 only moves the "4".
+const counterDigits = $$('[data-digit]');
+const rollCounter = (n: number, dir: number) =>
+  [...pad(n)].forEach((d, k) => roll(counterDigits[k], d, dir));
+
 // ---------- Clip switching ----------
-const counterEl = $('[data-roll="counter"]');
 const titleEl = $('[data-roll="title"]');
 const ticks = $$('[data-dial-item]');
 let current = 0;
@@ -98,9 +114,8 @@ function select(next: number) {
   advancing = false;
   if (videos[next].readyState > 0) videos[next].currentTime = 0;
 
-  turnWheel(dir);
   markTicks(next);
-  roll(counterEl, String(next + 1).padStart(2, '0'), dir);
+  rollCounter(next + 1, dir);
   roll(titleEl, titles[next], dir, 0.1);
   play(next);
 
@@ -109,9 +124,9 @@ function select(next: number) {
   incoming.style.zIndex = String(++renderOrder);
   const wipe = { duration: animate ? 1.5 : 0, ease: 'expo.inOut' };
 
+  // Forward: the new clip enters from the right, the same way the dial travels.
   gsap.fromTo(
     incoming,
-    // Forward: the new clip enters from the right, the same way the dial turns.
     { clipPath: dir === 1 ? 'inset(0% 0% 0% 100%)' : 'inset(0% 100% 0% 0%)' },
     { clipPath: 'inset(0% 0% 0% 0%)', ...wipe },
   );
@@ -128,7 +143,7 @@ function select(next: number) {
   );
 }
 
-// Like the reference, the clip changes once the dial has settled for half a second.
+// After a drag, the clip changes once the dial has settled for half a second.
 let settleTimer: number | undefined;
 const selectSoon = (i: number) => {
   clearTimeout(settleTimer);
@@ -137,21 +152,33 @@ const selectSoon = (i: number) => {
 
 // ---------- Dial ----------
 const dialItems = $$('[data-dial-item]');
+let driving = false; // true while the reel itself is moving the dial
 const loop = horizontalLoop(dialItems, {
   center: true,
   speed: window.innerWidth < 768 ? 0.5 : 1,
   repeat: -1,
   draggable: true,
   paused: true,
-  onChange: (_el: HTMLElement, index: number) => selectSoon(index % count),
+  onChange: (_el: HTMLElement, index: number) => {
+    if (!driving) selectSoon(index % count);
+  },
 });
 
 // With a 2-clip reel the dial holds each clip twice; aim for the nearest copy.
 const slotFor = (i: number) => (dialItems.length > count ? i + count : i);
 const spin = { duration: 0.8, ease: 'power1.inOut' };
-const goTo = (i: number) => {
+let freeAt = 0; // the reel leaves the dial alone until this time (ms)
+
+const goTo = (i: number, duration = spin.duration) => {
   const target = (i + count) % count;
-  loop.toIndex(slotFor(target), { ...spin });
+  freeAt = performance.now() + duration * 1000 + 50;
+  driving = true;
+  loop.toIndex(slotFor(target), {
+    duration,
+    ease: spin.ease,
+    onComplete: () => (driving = false),
+  });
+  if (duration === 0) driving = false;
   select(target);
 };
 // Start the dial centered on clip 01.
@@ -167,103 +194,78 @@ dialItems.forEach((item) => {
     }
   });
 });
-// ---------- Camera control wheel ----------
-const cam = $('.cam');
-const wheel = $('[data-cam-wheel]');
-const ring = $('[data-cam-ring]');
-const progressEl = $<SVGCircleElement>('[data-cam-progress]');
-let ringAngle = 0;
-
-// The knurled ring turns a notch with every clip change.
-function turnWheel(dir: number) {
-  ringAngle += dir * 36;
-  if (ring) gsap.to(ring, { rotation: ringAngle, duration: spin.duration, ease: spin.ease, overwrite: true });
-}
-
-// Pressing a side of the wheel tilts it slightly, like a real rocker.
-function press(dir: number) {
-  if (!wheel || !animate) return;
-  gsap.fromTo(wheel, { rotationY: 0 }, { rotationY: dir * 9, duration: 0.07, yoyo: true, repeat: 1, ease: 'power1.out' });
-}
-
-$('[data-step="prev"]')?.addEventListener('click', () => {
-  press(-1);
-  goTo(current - 1);
-});
-$('[data-step="next"]')?.addEventListener('click', () => {
-  press(1);
-  goTo(current + 1);
-});
+$('[data-step="prev"]')?.addEventListener('click', () => goTo(current - 1));
+$('[data-step="next"]')?.addEventListener('click', () => goTo(current + 1));
 
 // ---------- Auto-rotate ----------
-// Each clip plays through once, then the dial turns to the next one.
-// Off for visitors who ask for reduced motion; the center button pauses / resumes.
+// The dial glides at a steady pace while each clip plays, so the next number
+// reaches the center just as the clip ends and the next one wipes in.
+// Off for visitors who ask for reduced motion. Space pauses / resumes.
 let autoPlay = animate;
 let started = false;
 let holding = false;
 const LEAD = 0.45; // start the wipe just before the clip ends
-
-const centerBtn = $('[data-cam-center]');
-const centerLabel = $('[data-cam-label]');
-function setPaused(paused: boolean) {
-  autoPlay = !paused;
-  cam?.toggleAttribute('data-paused', paused);
-  centerBtn?.setAttribute('aria-pressed', String(paused));
-  if (centerLabel) centerLabel.textContent = paused ? 'Play reel' : 'Pause reel';
-  if (paused) videos[current].pause();
-  else {
-    // Pick up where the clip left off.
-    clipStartedAt = performance.now() - (videos[current].currentTime || 0) * 1000;
-    play(current);
-  }
-}
-// Reflect the starting state without touching playback.
-cam?.toggleAttribute('data-paused', !autoPlay);
-centerBtn?.setAttribute('aria-pressed', String(!autoPlay));
-if (centerLabel) centerLabel.textContent = autoPlay ? 'Pause reel' : 'Play reel';
-centerBtn?.addEventListener('click', () => setPaused(autoPlay));
 
 window.addEventListener('keydown', (e) => {
   if (e.key === 'ArrowLeft') goTo(current - 1);
   if (e.key === 'ArrowRight') goTo(current + 1);
   if (e.key === ' ' && e.target === document.body) {
     e.preventDefault();
-    setPaused(autoPlay);
+    autoPlay = !autoPlay;
+    if (autoPlay) {
+      clipStartedAt = performance.now() - (videos[current].currentTime || 0) * 1000;
+      play(current);
+    } else videos[current].pause();
   }
 });
 
-// Hold off while someone is dragging the dial.
+// Hold off while someone is dragging the dial, and until their pick has landed.
 const dialEl = $('[data-dial]');
-dialEl?.addEventListener('pointerdown', () => (holding = true));
+dialEl?.addEventListener('pointerdown', () => {
+  holding = true;
+  driving = false; // a grab cancels any spin in progress
+});
 window.addEventListener('pointerup', () => {
   if (!holding) return;
   holding = false;
-  clipStartedAt = performance.now();
+  freeAt = performance.now() + 1600; // throw + settle + 500ms pick delay
 });
+
+function driveDial(progress: number) {
+  const from = loop.times[slotFor(current)];
+  let to = loop.times[slotFor((current + 1) % count)];
+  if (to <= from) to += loop.duration();
+  driving = true;
+  loop.time(gsap.utils.wrap(0, loop.duration(), from + (to - from) * progress));
+  driving = false;
+}
 
 gsap.ticker.add(() => {
   const v = videos[current];
   const length = Number.isFinite(v.duration) && v.duration > 1 ? v.duration : 5;
   const playing = !v.paused && v.readyState > 2;
   const t = playing ? v.currentTime : (performance.now() - clipStartedAt) / 1000;
-  const progress = Math.min(1, t / (length - LEAD));
-  if (progressEl) progressEl.style.strokeDashoffset = String(100 - (started ? progress : 0) * 100);
-  if (!started || !autoPlay || holding || advancing || document.hidden) return;
-  if (t >= length - LEAD) {
+  const progress = Math.min(1, Math.max(0, t / (length - LEAD)));
+  const now = performance.now();
+  if (!started || !autoPlay || holding || document.hidden || now < freeAt) return;
+  driveDial(progress);
+  if (progress >= 1 && !advancing) {
     advancing = true;
-    goTo(current + 1);
+    goTo(current + 1, 0); // the dial is already there; just switch the clip
   }
 });
 
 // ---------- Timecode (follows the playing clip) ----------
-const tcEl = $('[data-timecode]');
-const pad = (n: number) => String(n).padStart(2, '0');
+const tcSlots = $$('[data-timecode] > span');
 const toTimecode = (sec: number) => {
   const frames = Math.floor(sec * 24);
   return `${pad(Math.floor(frames / 86400))}:${pad(Math.floor(frames / 1440) % 60)}:${pad(Math.floor(frames / 24) % 60)}:${pad(frames % 24)}`;
 };
 gsap.ticker.add(() => {
-  if (tcEl) tcEl.textContent = toTimecode(videos[current].currentTime || 0);
+  const tc = toTimecode(videos[current].currentTime || 0);
+  tcSlots.forEach((el, k) => {
+    if (el.textContent !== tc[k]) el.textContent = tc[k];
+  });
 });
 
 // ---------- Start ----------

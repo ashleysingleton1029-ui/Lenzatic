@@ -32,10 +32,11 @@ const dialSlots = reel.length === 2 ? [...reel, ...reel] : reel;
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Jost:wght@300;400;500&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Jost:wght@300;400;500&display=swap"
       rel="stylesheet"
     />
     <link rel="preload" as="image" href={posterUrl(reel[0].id)} />
+    <link rel="preload" as="font" type="font/woff2" href="/fonts/Salena.woff2" crossorigin />
 
     <script is:inline>
       if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
@@ -44,7 +45,7 @@ const dialSlots = reel.length === 2 ? [...reel, ...reel] : reel;
     </script>
   </head>
 
-  <body class="overflow-hidden bg-black font-sans">
+  <body class="overflow-hidden bg-black font-display uppercase">
     <!-- Preloader: two shutters that part like a letterbox opening -->
     <div id="preloader" class="pointer-events-none fixed inset-0 z-[5000] hidden [.js_&]:block" aria-hidden="true">
       <div data-shutter="top" class="absolute inset-x-0 top-0 h-1/2 bg-ink"></div>
@@ -57,7 +58,7 @@ const dialSlots = reel.length === 2 ? [...reel, ...reel] : reel;
         <div class="h-px w-[min(64vw,420px)] bg-mist/15">
           <div data-loader-bar class="h-px w-full origin-left scale-x-0 bg-ochre"></div>
         </div>
-        <p data-loader-tc class="font-mono text-[11px] tracking-[0.3em] text-haze">00:00:00:00</p>
+        <p data-loader-tc class="text-[11px] tracking-[0.3em] text-haze">00:00:00:00</p>
       </div>
     </div>
 
@@ -106,10 +107,10 @@ const dialSlots = reel.length === 2 ? [...reel, ...reel] : reel;
       <!-- Top HUD -->
       <header class="absolute inset-x-0 top-0 z-[4500] flex items-start justify-between px-6 pt-7 text-white mix-blend-difference sm:px-12 sm:pt-10">
         <div class="overflow-hidden">
-          <div data-intro-up class="flex items-center gap-2 font-mono text-[10px] tracking-[0.25em] sm:text-[11px]">
+          <div data-intro-up class="flex items-center gap-2 text-[10px] tracking-[0.25em] sm:text-[11px]">
             <span class="rec-dot inline-block h-2 w-2 rounded-full bg-white"></span>
             <span>REC</span>
-            <span data-timecode class="ml-2 hidden tabular-nums opacity-70 sm:inline">00:00:00:00</span>
+            <span data-timecode class="ml-2 hidden opacity-70 sm:inline">{[..."00:00:00:00"].map((ch) => <span class={ch === ":" ? "inline-block w-[0.4em] text-center" : "digit"}>{ch}</span>)}</span>
           </div>
         </div>
         <div class="absolute left-1/2 top-7 -translate-x-1/2 overflow-hidden sm:top-10">
@@ -119,29 +120,27 @@ const dialSlots = reel.length === 2 ? [...reel, ...reel] : reel;
           <a
             data-intro-up
             href={`mailto:${email}?subject=Project%20inquiry`}
-            class="link-draw block font-mono text-[10px] uppercase tracking-[0.25em] sm:text-[11px]"
+            class="link-draw block text-[10px] uppercase tracking-[0.25em] sm:text-[11px]"
           ><span class="sm:hidden">Contact</span><span class="hidden sm:inline">Get in touch</span></a>
         </div>
       </header>
 
       <!-- Bottom: counter + title, dial, prev/next -->
-      <div class="absolute inset-x-0 bottom-0 z-[4500] grid grid-cols-[1fr_auto_1fr] items-end gap-y-5 px-6 pb-5 text-white mix-blend-difference sm:px-12 sm:pb-8">
-        <div class="col-span-3 flex flex-col gap-1 md:col-span-1">
+      <div class="absolute inset-x-0 bottom-0 z-[4500] grid grid-cols-[1fr_auto] items-end gap-x-3 gap-y-5 md:grid-cols-[1fr_auto_1fr] px-6 pb-5 text-white mix-blend-difference sm:px-12 sm:pb-8">
+        <div class="col-span-2 flex flex-col gap-1 md:col-span-1">
           <div class="overflow-hidden">
-            <div data-intro-up class="flex gap-1 font-mono text-[11px] tracking-[0.2em]">
-              <span data-roll="counter" class="relative inline-block w-[2.2ch] overflow-hidden text-center"><span class="block">01</span></span>
+            <div data-intro-up class="flex gap-1 text-[11px] tracking-[0.2em]">
+              <span data-counter class="inline-flex">{[..."01"].map((d) => <span data-digit class="digit relative overflow-hidden"><span class="block">{d}</span></span>)}</span>
               <span class="opacity-60">/</span>
-              <span class="opacity-60">{pad(reel.length)}</span>
+              <span class="opacity-60">{[...pad(reel.length)].map((d) => <span class="digit">{d}</span>)}</span>
             </div>
           </div>
           <h2 class="overflow-hidden">
             <span data-intro-up class="block">
-              <span data-roll="title" class="relative block h-[1.2em] overflow-hidden text-2xl font-light uppercase leading-[1.2] tracking-[0.14em] sm:text-4xl"><span class="block">{reel[0].title}</span></span>
+              <span data-roll="title" class="relative block h-[1.2em] overflow-hidden text-2xl leading-[1.2] tracking-[0.1em] sm:text-4xl"><span class="block">{reel[0].title}</span></span>
             </span>
           </h2>
         </div>
-
-        <div class="md:hidden"></div>
 
         <div class="overflow-hidden pt-2">
           <nav data-intro-up aria-label="Reel" class="pointer-events-auto mx-auto w-48 md:w-96">
@@ -156,7 +155,7 @@ const dialSlots = reel.length === 2 ? [...reel, ...reel] : reel;
                     aria-label={`Show ${clip.title}`}
                     class="relative flex h-14 w-24 shrink-0 flex-col items-center justify-center pt-6 md:w-44"
                   >
-                    <span class="absolute left-1/2 top-0 -translate-x-1/2 font-mono text-[10px] tracking-[0.15em]">{pad(i + 1)}</span>
+                    <span class="absolute left-1/2 top-0 -translate-x-1/2 text-[10px] tracking-[0.15em]">{pad(i + 1)}</span>
                     <span class="flex h-8 w-full flex-row justify-between" aria-hidden="true">
                       <span class="my-auto h-2 w-px bg-current"></span>
                       <span class="my-auto h-2 w-px bg-current"></span>
@@ -173,31 +172,28 @@ const dialSlots = reel.length === 2 ? [...reel, ...reel] : reel;
           </nav>
         </div>
 
-        <!-- Space held for the control wheel, which sits outside this blended layer -->
-        <div class="h-16 w-16 justify-self-end md:h-[104px] md:w-[104px]" aria-hidden="true"></div>
-      </div>
-
-      <!-- Camera-style control wheel: left/right = previous/next, center = pause/play -->
-      <div class="absolute bottom-5 right-6 z-[4600] sm:bottom-8 sm:right-12">
-        <div data-intro-up class="cam" role="group" aria-label="Reel controls">
-          <svg class="cam-progress" viewBox="0 0 100 100" aria-hidden="true">
-            <circle cx="50" cy="50" r="48.5" pathLength="100" data-cam-progress />
-          </svg>
-          <div class="cam-housing">
-            <div class="cam-wheel" data-cam-wheel>
-              <div class="cam-ring" data-cam-ring></div>
-              <div class="cam-ring-shine"></div>
-              <div class="cam-face">
-                <span class="cam-print cam-print-t">DISP</span>
-                <span class="cam-print cam-print-l">&#9664;</span>
-                <span class="cam-print cam-print-r">&#9654;</span>
-                <span class="cam-print cam-print-b">AUTO</span>
-              </div>
-              <button type="button" data-step="prev" class="cam-zone cam-zone-l"><span class="sr-only">Previous clip</span></button>
-              <button type="button" data-step="next" class="cam-zone cam-zone-r"><span class="sr-only">Next clip</span></button>
-              <button type="button" data-cam-center class="cam-center" aria-pressed="false">
-                <span class="cam-center-icon" data-cam-icon aria-hidden="true"></span>
-                <span class="sr-only" data-cam-label>Pause reel</span>
+        <div class="justify-self-end">
+          <div class="overflow-hidden">
+            <div data-intro-up class="pointer-events-auto flex gap-2">
+              <button type="button" data-step="prev" class="arrow-btn">
+                <svg viewBox="0 0 76 46" aria-hidden="true">
+                  <path class="frame" pathLength="100" d="M10 .5H75.5V35.5L65.5 45.5H.5V10.5Z" />
+                  <g class="arrow">
+                    <line class="shaft" x1="22" y1="23" x2="52" y2="23" />
+                    <polyline points="46,17 52,23 46,29" />
+                  </g>
+                </svg>
+                <span class="sr-only">Previous clip</span>
+              </button>
+              <button type="button" data-step="next" class="arrow-btn">
+                <svg viewBox="0 0 76 46" aria-hidden="true">
+                  <path class="frame" pathLength="100" d="M10 .5H75.5V35.5L65.5 45.5H.5V10.5Z" />
+                  <g class="arrow">
+                    <line class="shaft" x1="22" y1="23" x2="52" y2="23" />
+                    <polyline points="46,17 52,23 46,29" />
+                  </g>
+                </svg>
+                <span class="sr-only">Next clip</span>
               </button>
             </div>
           </div>

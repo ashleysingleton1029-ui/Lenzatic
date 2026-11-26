@@ -20,6 +20,7 @@ npm run build    # outputs to dist/
 - `src/scripts/horizontalLoop.js`: the draggable, endlessly looping dial
 - `src/pages/coming-soon.astro` + `src/scripts/landing.ts`: the Coming Soon page
 - `public/images/lenzatic-mark.svg`: gold center mark (`lenzatic-mark-light.svg` is the grey version)
+- `public/fonts/Salena.woff2`: Salena display font (see the licence note below)
 - `src/styles/global.css`: brand colors, fonts, film grain
 - `public/images/`: hero photo and logo
 
@@ -35,3 +36,11 @@ npm run build    # outputs to dist/
 | sand | `#d9c7a3` | desert floor |
 | ochre | `#d29a3f` | golden brush (accent) |
 | rust | `#8a4f16` | rusted posts |
+
+## Font licence: Salena
+
+The Salena file in `public/fonts/` is Typebae's **demo** version: "free for personal use only and
+not permitted for commercial purposes", and its digits 0–5 are replaced with a watermark. Before
+the site goes live, buy a commercial/web licence (hello@typebae.com), convert the licensed font to
+`public/fonts/Salena.woff2`, and remove the `unicode-range` line in `src/styles/global.css` so
+Salena's own numbers are used (numbers currently fall back to Jost).
