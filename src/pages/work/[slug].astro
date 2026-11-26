@@ -18,7 +18,7 @@ const description = `${title} cinematography by Roberto Lee Cortes.`;
 // wide and shifted left so (subject position x box width) lands on that target.
 const BOX = 140;
 const shift = (hero.subjectX * BOX) / 100;
-const heroStyle = `left:calc(var(--hero-target) - ${shift}%);width:${BOX}%;max-width:none;object-position:${hero.subjectX}% ${hero.focusY ?? '50%'}`;
+const heroStyle = `left:calc(var(--hero-target) - ${shift}%);width:${BOX}%;max-width:none;--pos-x:${hero.subjectX}%;--pos-x-m:${hero.mobileX ?? hero.subjectX}%;--pos-y:${hero.focusY ?? '50%'}`;
 ---
 
 <!doctype html>

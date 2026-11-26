@@ -10,8 +10,9 @@ const email = 'lenzatic@gmail.com';
 
 <header
   class:list={[
-    fixed ? 'fixed' : 'absolute',
-    'inset-x-0 top-0 z-[4500] flex items-start justify-between px-6 pt-7 text-white mix-blend-difference sm:px-12 sm:pt-10',
+    // Fixed (scrolling pages): a solid black bar so the links never blend with what passes under them.
+    fixed ? 'fixed bg-black pb-5 sm:pb-7' : 'absolute mix-blend-difference',
+    'inset-x-0 top-0 z-[4500] flex items-start justify-between px-6 pt-7 text-white sm:px-12 sm:pt-10',
   ]}
 >
   <!-- REC + timecode (from small tablets up; phones show the logo here instead) -->

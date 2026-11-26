@@ -208,10 +208,10 @@ header:has(.link-draw:hover, .link-draw:focus-visible) {
 
 /* ---------- Gallery page: hero subject position + fade ---------- */
 /* Strip on the right (default): subject sits left, fade to black toward the right. */
-.gallery-hero { --hero-target: 24%; }
+.gallery-hero { --hero-target: 24%; object-position: var(--pos-x-m) var(--pos-y); }
 .gallery-fade { background: linear-gradient(90deg, transparent 0%, transparent 38%, rgba(0,0,0,0.7) 52%, #000 62%); }
 @media (min-width: 768px) {
-  .gallery-hero { --hero-target: 28%; }
+  .gallery-hero { --hero-target: 28%; object-position: var(--pos-x) var(--pos-y); }
   .gallery-fade { background: linear-gradient(90deg, transparent 0%, transparent 34%, rgba(0,0,0,0.65) 56%, #000 72%); }
 }
 /* Strip on the left: everything mirrors. */
