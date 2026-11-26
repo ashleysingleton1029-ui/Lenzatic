@@ -1,0 +1,177 @@
+---
+import '../../styles/global.css';
+import Header from '../../components/Header.astro';
+import { galleries, frameSrc, type Gallery } from '../../data/galleries';
+
+export function getStaticPaths() {
+  return galleries.map((gallery) => ({ params: { slug: gallery.slug }, props: { gallery } }));
+}
+
+const { gallery } = Astro.props as { gallery: Gallery };
+const { slug, title, hero, frames } = gallery;
+const pageTitle = `${title} — Lenzatic`;
+const description = `${title} cinematography by Roberto Lee Cortes.`;
+const pad = (n: number) => String(n).padStart(2, '0');
+
+// Place the hero subject toward the left on any screen (24% across on phones,
+// 28% on larger screens; see .gallery-hero in global.css). The image box is 140%
+// wide and shifted left so (subject position x box width) lands on that target.
+const BOX = 140;
+const shift = (hero.subjectX * BOX) / 100;
+const heroStyle = `left:calc(var(--hero-target) - ${shift}%);width:${BOX}%;max-width:none;object-position:${hero.subjectX}% ${hero.focusY ?? '50%'}`;
+---
+
+<!doctype html>
+<html lang="en" style="background:#000">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{pageTitle}</title>
+    <meta name="description" content={description} />
+    <meta name="theme-color" content="#000000" />
+    <link rel="canonical" href={`https://www.lenzatic.com/work/${slug}`} />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={`https://www.lenzatic.com/work/${slug}`} />
+    <meta property="og:title" content={pageTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={`https://www.lenzatic.com/images/${slug}/hero.jpg`} />
+    <meta name="twitter:card" content="summary_large_image" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Jost:wght@300;400;500&display=swap" rel="stylesheet" />
+    <link rel="preload" as="font" type="font/woff2" href="/fonts/Salena.woff2" crossorigin />
+    <link rel="preload" as="image" href={`/images/${slug}/hero.webp`} imagesrcset={`/images/${slug}/hero-1280.webp 1280w, /images/${slug}/hero.webp 2560w`} imagesizes="140vw" />
+
+    <script is:inline>
+      if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        document.documentElement.classList.add('js');
+      }
+    </script>
+  </head>
+
+  <body class="overflow-hidden font-display uppercase text-white" style="background:#000">
+    <Header current="work" fixed />
+
+    <main class="relative h-svh min-h-[520px] w-full overflow-hidden">
+      <!-- Hero: full screen, subject on the left -->
+      <div data-hero class="absolute inset-0">
+        <img
+          src={`/images/${slug}/hero.jpg`}
+          srcset={`/images/${slug}/hero-1280.webp 1280w, /images/${slug}/hero.webp 2560w`}
+          sizes="140vw"
+          alt={hero.alt}
+          fetchpriority="high"
+          decoding="async"
+          class="gallery-hero absolute top-0 h-full object-cover"
+          style={heroStyle}
+        />
+      </div>
+      <!-- Fade to black toward the film strip -->
+      <div class="pointer-events-none absolute inset-0 bg-[linear-gradient(90deg,transparent_0%,transparent_38%,rgba(0,0,0,0.7)_52%,#000_62%)] md:bg-[linear-gradient(90deg,transparent_0%,transparent_34%,rgba(0,0,0,0.65)_56%,#000_72%)]"></div>
+      <div class="pointer-events-none absolute inset-0 bg-gradient-to-b from-black/45 via-transparent to-black/60"></div>
+
+      <!-- Title -->
+      <div class="absolute bottom-0 left-0 z-10 px-6 pb-6 sm:px-12 sm:pb-10">
+        <div class="overflow-hidden">
+          <a data-intro-up href="/work" class="link-draw mb-3 inline-block text-[10px] tracking-[0.25em] opacity-70 sm:text-[11px]">&larr;&nbsp; All work</a>
+        </div>
+        <div class="overflow-hidden">
+          <h1 data-intro-up class="text-xl tracking-[0.24em] sm:text-3xl">{title}</h1>
+        </div>
+      </div>
+
+      <!-- Moving vertical film strip -->
+      <div id="film" data-film class="film" aria-label={`${title} frames`} role="region">
+        <div data-film-track class="film-track">
+          {[0, 1].map((copy) =>
+            frames.map((frame, i) => {
+              const src = frameSrc(slug, i);
+              return (
+                <button
+                  type="button"
+                  class="film-frame"
+                  data-frame={i}
+                  tabindex={copy ? -1 : 0}
+                  aria-hidden={copy ? 'true' : undefined}
+                  aria-label={copy ? undefined : `View frame ${i + 1}: ${frame.alt}`}
+                >
+                  <img src={src.thumb} alt="" loading={i < 6 && !copy ? 'eager' : 'lazy'} decoding="async" style={frame.focus ? `object-position:${frame.focus}` : undefined} />
+                  <span class="film-code" aria-hidden="true">{pad(i + 1)}</span>
+                </button>
+              );
+            }),
+          )}
+        </div>
+      </div>
+
+      <!-- Measuring ruler: shows and controls the position along the film strip -->
+      <div
+        data-ruler
+        class="ruler"
+        role="scrollbar"
+        tabindex="0"
+        aria-controls="film"
+        aria-orientation="vertical"
+        aria-valuemin="0"
+        aria-valuemax="100"
+        aria-valuenow="0"
+        aria-label="Film position"
+      >
+        <div class="ruler-glass"></div>
+        <div data-ruler-ticks aria-hidden="true">
+          {Array.from({ length: 100 }, (_, i) => (
+            <span class:list={['ruler-tick', i % 5 === 0 && 'is-major']}>
+              {i % 5 === 0 && <span class="ruler-label">{i}</span>}
+            </span>
+          ))}
+        </div>
+        <div data-ruler-window class="ruler-window" aria-hidden="true"></div>
+        <div data-ruler-cursor class="ruler-cursor" aria-hidden="true">
+          <span class="ruler-readout">
+            {[0, 1, 2].map(() => (
+              <span class="ruler-digit"><span data-digit-col>{[...'0123456789'].map((d) => <span class="block">{d}</span>)}</span></span>
+            ))}
+            <span style="margin-left:2px">%</span>
+          </span>
+        </div>
+      </div>
+    </main>
+
+    <!-- Full-screen viewer -->
+    <div data-viewer class="viewer uppercase" role="dialog" aria-modal="true" aria-label={`${title} viewer`} hidden>
+      <img data-viewer-img alt="" />
+      <div class="viewer-bar">
+        <span data-viewer-count class="text-[10px] tracking-[0.25em] sm:text-[11px]"></span>
+        <div class="flex gap-1.5">
+          {[
+            { dir: 'prev', label: 'Previous frame' },
+            { dir: 'next', label: 'Next frame' },
+          ].map((b) => (
+            <button type="button" data-viewer-step={b.dir} class="arrow-btn" data-step={b.dir}>
+              <svg viewBox="0 0 76 46" aria-hidden="true">
+                <path class="frame" pathLength="100" d="M10 .5H75.5V35.5L65.5 45.5H.5V10.5Z" />
+                <g class="arrow">
+                  <line class="shaft" x1="22" y1="23" x2="52" y2="23" />
+                  <polyline points="46,17 52,23 46,29" />
+                </g>
+              </svg>
+              <span class="sr-only">{b.label}</span>
+            </button>
+          ))}
+        </div>
+        <button type="button" data-viewer-close class="link-draw text-[10px] tracking-[0.25em] sm:text-[11px]">Close</button>
+      </div>
+    </div>
+
+    <div class="grain hidden [.js_&]:block" aria-hidden="true"></div>
+
+    <script define:vars={{ galleryFrames: frames.map((f, i) => ({ alt: f.alt, src: frameSrc(slug, i).full })) }}>
+      window.__galleryFrames = galleryFrames;
+    </script>
+    <script>
+      import '../../scripts/gallery.ts';
+    </script>
+  </body>
+</html>

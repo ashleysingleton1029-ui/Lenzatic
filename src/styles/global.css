@@ -206,7 +206,226 @@ header:has(.link-draw:hover, .link-draw:focus-visible) {
   clip-path: inset(0% 0% 0% 100%);
 }
 
- {
+/* ---------- Gallery page: hero subject position ---------- */
+.gallery-hero { --hero-target: 24%; }
+@media (min-width: 768px) {
+  .gallery-hero { --hero-target: 28%; }
+}
+
+/* ---------- Gallery page: vertical film strip ---------- */
+.film {
+  --ruler: 44px;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  right: calc(var(--ruler) + 10px);
+  width: 36vw;
+  z-index: 5;
+  overflow: hidden;
+  touch-action: none;
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 12%, #000 88%, transparent 100%);
+  mask-image: linear-gradient(to bottom, transparent 0, #000 12%, #000 88%, transparent 100%);
+}
+@media (min-width: 768px) {
+  .film { --ruler: 60px; right: calc(var(--ruler) + 18px); width: clamp(220px, 23vw, 400px); }
+}
+.film-track {
+  position: absolute;
+  inset-inline: 0;
+  top: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 0 18px;
+  background-color: #0d0d0d;
+  /* sprocket holes down both edges */
+  background-image:
+    repeating-linear-gradient(to bottom, transparent 0 5px, #000 5px 11px, transparent 11px 16px),
+    repeating-linear-gradient(to bottom, transparent 0 5px, #000 5px 11px, transparent 11px 16px);
+  background-size: 7px 100%, 7px 100%;
+  background-position: 5px 0, calc(100% - 5px) 0;
+  background-repeat: no-repeat;
+  will-change: transform;
+}
+@media (min-width: 768px) {
+  .film-track { padding: 0 22px; background-size: 9px 100%, 9px 100%; background-position: 6px 0, calc(100% - 6px) 0; }
+}
+.film-frame {
+  position: relative;
+  display: block;
+  width: 100%;
+  aspect-ratio: 3 / 2;
+  flex: none;
+  cursor: zoom-in;
+  background: #050505;
+  outline: none;
+}
+.film-frame img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: brightness(0.82) saturate(0.9);
+  transition: filter 0.5s ease;
+}
+.film-frame:hover img,
+.film-frame:focus-visible img {
+  filter: none;
+}
+.film-frame:focus-visible {
+  box-shadow: 0 0 0 1px var(--color-gold);
+}
+/* frame number printed in the sprocket margin, like edge code */
+.film-code {
+  position: absolute;
+  left: -15px;
+  top: 6px;
+  font-size: 7px;
+  letter-spacing: 0.1em;
+  color: rgb(214 223 224 / 0.45);
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+}
+@media (min-width: 768px) {
+  .film-code { left: -19px; font-size: 8px; }
+}
+
+/* ---------- Gallery page: measuring ruler (drives the film strip) ---------- */
+.ruler {
+  --ink: 214 223 224;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  width: 44px;
+  z-index: 6;
+  overflow: hidden;
+  cursor: crosshair;
+  touch-action: none;
+  user-select: none;
+}
+@media (min-width: 768px) {
+  .ruler { width: 60px; }
+}
+.ruler-glass {
+  position: absolute;
+  inset: 0;
+  backdrop-filter: blur(9px);
+  -webkit-backdrop-filter: blur(9px);
+  background-color: rgb(0 0 0 / 0.45);
+  -webkit-mask-image: linear-gradient(to bottom, transparent, #000 10%, #000 90%, transparent);
+  mask-image: linear-gradient(to bottom, transparent, #000 10%, #000 90%, transparent);
+}
+.ruler-tick {
+  position: absolute;
+  right: 0;
+  top: 0;
+  height: 1px;
+  width: 10px;
+  background: rgb(var(--ink));
+  opacity: 0.4;
+  will-change: transform;
+}
+.ruler-tick.is-major {
+  width: 20px;
+  opacity: 0.8;
+}
+.ruler-label {
+  position: absolute;
+  right: 24px;
+  top: -6px;
+  font-family: var(--font-sans);
+  font-size: 9px;
+  line-height: 12px;
+  letter-spacing: 0.08em;
+  color: rgb(var(--ink));
+  opacity: 0.6;
+}
+.ruler-window {
+  position: absolute;
+  inset-inline: 0;
+  top: 0;
+  opacity: 0;
+  background: rgb(var(--ink) / 0.1);
+  border-top: 1px solid rgb(var(--ink) / 0.5);
+  border-bottom: 1px solid rgb(var(--ink) / 0.5);
+  pointer-events: none;
+}
+.ruler-cursor {
+  position: absolute;
+  inset-inline: 0;
+  top: 0;
+  height: 0;
+  opacity: 0;
+  pointer-events: none;
+}
+.ruler-cursor::before {
+  content: "";
+  position: absolute;
+  inset-inline: 0;
+  top: 0;
+  height: 1px;
+  background: var(--color-gold);
+  box-shadow: 0 0 6px var(--color-gold);
+}
+.ruler-readout {
+  position: absolute;
+  right: 3px;
+  top: 4px;
+  display: flex;
+  font-family: var(--font-sans);
+  font-size: 9px;
+  letter-spacing: 0.08em;
+  color: var(--color-gold);
+  white-space: nowrap;
+}
+/* rolling digits: each column is a 0-9 stack moved with translateY */
+.ruler-digit {
+  display: inline-block;
+  height: 1.2em;
+  line-height: 1.2em;
+  overflow: hidden;
+  width: 0.62em;
+  text-align: center;
+}
+.ruler-digit > span {
+  display: block;
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* ---------- Gallery page: full-screen viewer ---------- */
+.viewer {
+  position: fixed;
+  inset: 0;
+  z-index: 6000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgb(0 0 0 / 0.95);
+  padding: 72px 16px 88px;
+}
+.viewer[hidden] {
+  display: none;
+}
+.viewer img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+.viewer-bar {
+  position: absolute;
+  inset-inline: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 20px 24px;
+}
+@media (min-width: 640px) {
+  .viewer-bar { padding: 28px 48px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
   .grain,
   .rec-dot {
     animation: none;

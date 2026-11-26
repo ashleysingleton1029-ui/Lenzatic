@@ -20,6 +20,8 @@ npm run build    # outputs to dist/
 - `src/scripts/horizontalLoop.js`: the draggable, endlessly looping dial
 - `src/pages/work.astro` + `src/scripts/work.ts`: Work page of stacked cinematic strips
 - `src/data/work.ts`: the Work strips (titles, image crop focus), top to bottom; images live in `public/images/work/`
+- `src/pages/work/[slug].astro` + `src/scripts/gallery.ts`: gallery pages (hero, moving film strip, measuring ruler, full-screen viewer)
+- `src/data/galleries.ts`: gallery content; images in `public/images/<gallery>/` (`hero.*`, then `01-960.webp` + `01.webp`, `02-…` in strip order)
 - `src/components/Header.astro`: top bar shared by every page
 - `src/pages/coming-soon.astro` + `src/scripts/landing.ts`: the Coming Soon page
 - `public/images/lenzatic-mark.svg`: gold center mark (`lenzatic-mark-light.svg` is the grey version)

@@ -68,6 +68,9 @@ const year = new Date().getFullYear();
                 class="strip-img absolute inset-x-0 -top-[15%] h-[130%] w-full object-cover"
                 style={`object-position: ${item.focus};${item.pan ? ` left: -${item.pan}%; width: ${100 + item.pan}%; max-width: none;` : ''}`}
               />
+              {item.href && (
+                <a href={item.href} class="absolute inset-0 z-10" aria-label={`Open the ${item.title} gallery`}></a>
+              )}
               <div class="pointer-events-none absolute inset-0 bg-gradient-to-r from-black/55 via-black/10 to-transparent"></div>
               <div class="pointer-events-none absolute inset-x-0 bottom-0 h-2/3 bg-gradient-to-t from-black/50 to-transparent"></div>
 
