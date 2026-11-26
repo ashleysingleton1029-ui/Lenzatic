@@ -108,13 +108,13 @@ body {
 .arrow-btn {
   position: relative;
   display: block;
-  width: 64px;
-  height: 40px;
+  width: 42px;
+  height: 26px;
   color: inherit;
   -webkit-tap-highlight-color: transparent;
 }
 @media (min-width: 768px) {
-  .arrow-btn { width: 76px; height: 46px; }
+  .arrow-btn { width: 50px; height: 30px; }
 }
 .arrow-btn svg {
   position: absolute;
@@ -128,7 +128,7 @@ body {
   stroke: currentColor;
   stroke-width: 1;
   vector-effect: non-scaling-stroke;
-  opacity: 0.35;
+  opacity: 0.25;
   transition: opacity 0.4s;
 }
 @keyframes frame-draw {
@@ -138,7 +138,7 @@ body {
 .arrow-btn .arrow {
   fill: none;
   stroke: currentColor;
-  stroke-width: 1.25;
+  stroke-width: 1;
   vector-effect: non-scaling-stroke;
   stroke-linecap: square;
   transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
