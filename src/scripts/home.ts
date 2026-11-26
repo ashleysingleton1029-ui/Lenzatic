@@ -17,6 +17,21 @@ const titles = videos.map((v) => (v.getAttribute('aria-label') || '').replace(/ 
 const count = clips.length;
 const pad = (n: number) => String(n).padStart(2, '0');
 
+// ---------- Clip length ----------
+// A clip can be trimmed on the site with data-length (seconds); otherwise its full length is used.
+const clipLength = (v: HTMLVideoElement) => {
+  const full = Number.isFinite(v.duration) && v.duration > 1 ? v.duration : 5;
+  const cap = Number(v.dataset.length);
+  return cap > 0 ? Math.min(cap, full) : full;
+};
+// Trimmed clips loop back to the start at their cut point.
+videos.forEach((v) => {
+  if (!v.dataset.length) return;
+  v.addEventListener('timeupdate', () => {
+    if (v.currentTime >= clipLength(v)) v.currentTime = 0;
+  });
+});
+
 // ---------- Video loading (Cloudflare Stream HLS) ----------
 let hlsLib: Promise<HlsModule['default'] | null> | null = null;
 const getHls = () =>
@@ -258,7 +273,7 @@ function driveDial(progress: number) {
 
 gsap.ticker.add(() => {
   const v = videos[current];
-  const length = Number.isFinite(v.duration) && v.duration > 1 ? v.duration : 5;
+  const length = clipLength(v);
   const playing = !v.paused && v.readyState > 2;
   const t = playing ? v.currentTime : (performance.now() - clipStartedAt) / 1000;
   const progress = Math.min(1, Math.max(0, t / (length - LEAD)));
