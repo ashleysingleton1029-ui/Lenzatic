@@ -145,16 +145,19 @@ header:has(.link-draw:hover, .link-draw:focus-visible) {
   stroke-width: 1;
   stroke-linejoin: miter;
   vector-effect: non-scaling-stroke;
-  transition: stroke 0.35s ease;
+  opacity: 0.5; /* translucent, a touch more than the logo */
+  transition: stroke 0.35s ease, opacity 0.35s ease;
 }
 .arrow-btn .arrow {
   fill: currentColor;
+  opacity: 0.5;
   transform-box: fill-box;
   transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1);
 }
 .arrow-btn:hover .frame,
 .arrow-btn:focus-visible .frame {
   stroke: var(--color-gold);
+  opacity: 1;
 }
 .arrow-btn:hover .arrow,
 .arrow-btn:focus-visible .arrow {
