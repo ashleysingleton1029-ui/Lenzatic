@@ -3,7 +3,7 @@ import '../styles/global.css';
 import Header from '../components/Header.astro';
 import { reel, manifestUrl, posterUrl, STREAM_BASE } from '../data/reel';
 
-const title = 'Lenzatic — Cinematography by Roberto Lee Cortes';
+const title = 'Lenzatic by Roberto Lee Cortes';
 const description = 'Lenzatic is the cinematography portfolio of Roberto Lee Cortes.';
 const pad = (n: number) => String(n).padStart(2, '0');
 // The looping dial needs at least 3 slots to wrap smoothly, so a 2-clip reel is shown twice.
@@ -19,7 +19,9 @@ const dialSlots = reel.length === 2 ? [...reel, ...reel] : reel;
     <meta name="description" content={description} />
     <meta name="theme-color" content="#000000" />
     <link rel="canonical" href="https://www.lenzatic.com/" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png" />
+    <link rel="icon" href="/favicon.ico" sizes="48x48" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
 
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://www.lenzatic.com/" />
