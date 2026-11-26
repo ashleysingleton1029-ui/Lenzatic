@@ -95,14 +95,30 @@ let clipStartedAt = performance.now();
 let advancing = false;
 
 function markTicks(i: number) {
-  ticks.forEach((item) => {
-    const on = Number(item.dataset.dialItem) === i;
-    const tick = $('[data-tick]', item)!;
-    tick.classList.toggle('scale-y-100', on);
-    tick.classList.toggle('scale-y-[0.3]', !on);
-    item.toggleAttribute('aria-current', on);
-  });
+  ticks.forEach((item) => item.toggleAttribute('aria-current', Number(item.dataset.dialItem) === i));
 }
+
+// The tick (and number) passing through the middle of the dial grows tall and
+// bright; neighbours shrink and dim as they move away from the center.
+const tickParts = ticks.map((item) => ({
+  item,
+  tick: $('[data-tick]', item)!,
+  num: $('[data-num]', item)!,
+}));
+const dialBox = $('[data-dial]');
+function shapeTicks() {
+  if (!dialBox) return;
+  const box = dialBox.getBoundingClientRect();
+  const mid = box.left + box.width / 2;
+  for (const { item, tick, num } of tickParts) {
+    const r = item.getBoundingClientRect();
+    const near = Math.max(0, 1 - Math.abs(r.left + r.width / 2 - mid) / (r.width * 0.6));
+    const ease = near * near * (3 - 2 * near); // smoothstep
+    tick.style.transform = `scaleY(${0.3 + 0.7 * ease})`;
+    num.style.opacity = String(0.4 + 0.6 * ease);
+  }
+}
+gsap.ticker.add(shapeTicks);
 
 function select(next: number) {
   if (next === current) return;
