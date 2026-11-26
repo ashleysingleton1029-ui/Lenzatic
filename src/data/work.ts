@@ -15,7 +15,7 @@ export const work: WorkStrip[] = [
   { slug: '01-narrative', title: 'Narrative', href: '/work/narrative', alt: 'Silhouette of a man in a hat holding a pistol against a bright window', focus: '50% 0%' },
   { slug: '02-aerial', title: 'Aerial', href: '/work/aerial', alt: 'Hazy golden sunset over a desert city valley and mountain range', focus: '50% 46%' },
   { slug: '03-motorsports', title: 'Motorsport', href: '/work/motorsport', alt: 'Black sports car drifting with tyre smoke pouring from the rear wheel', focus: '62% 58%' },
-  { slug: '04-portrait', title: 'Portrait', alt: 'Man in a mustard T-shirt standing in tall grass before rusted industrial towers', focus: '55% 7%', pan: 12 },
+  { slug: '04-portrait', title: 'Portrait', href: '/work/portrait', alt: 'Man in a mustard T-shirt standing in tall grass before rusted industrial towers', focus: '55% 7%', pan: 12 },
   { slug: '05-wildlife', title: 'Nature', alt: 'Condor soaring past blurred canyon walls', focus: '50% 39%', pan: 7 },
 ];
 
