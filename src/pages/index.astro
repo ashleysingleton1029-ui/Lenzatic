@@ -109,7 +109,7 @@ const dialSlots = reel.length === 2 ? [...reel, ...reel] : reel;
       <Header current="home" />
 
       <!-- Bottom: counter + title, dial, prev/next -->
-      <div class="absolute inset-x-0 bottom-0 z-[4500] grid grid-cols-[1fr_auto] items-end gap-x-3 gap-y-5 md:grid-cols-[1fr_auto_1fr] px-6 pb-5 text-white mix-blend-difference sm:px-12 sm:pb-8">
+      <div class="reel-bar absolute inset-x-0 bottom-0 z-[4500] grid grid-cols-[1fr_auto] items-end gap-x-3 gap-y-5 md:grid-cols-[1fr_auto_1fr] px-6 pb-5 text-white mix-blend-difference sm:px-12 sm:pb-8">
         <div class="col-span-2 flex flex-col gap-1.5 md:col-span-1">
           <div class="overflow-hidden">
             <div data-intro-up class="flex gap-1 text-[11px] tracking-[0.2em]">
@@ -157,24 +157,18 @@ const dialSlots = reel.length === 2 ? [...reel, ...reel] : reel;
 
         <div class="justify-self-end">
           <div class="overflow-hidden">
-            <div data-intro-up class="pointer-events-auto flex gap-1.5">
+            <div data-intro-up class="pointer-events-auto flex gap-2">
               <button type="button" data-step="prev" class="arrow-btn">
-                <svg viewBox="0 0 76 46" aria-hidden="true">
-                  <path class="frame" pathLength="100" d="M10 .5H75.5V35.5L65.5 45.5H.5V10.5Z" />
-                  <g class="arrow">
-                    <line class="shaft" x1="22" y1="23" x2="52" y2="23" />
-                    <polyline points="46,17 52,23 46,29" />
-                  </g>
+                <svg viewBox="0 0 44 36" aria-hidden="true">
+                  <path class="frame" d="M1.5 1.5V34.5L42.5 18Z" />
+                  <path class="arrow" d="M8 11V25L26 18Z" />
                 </svg>
                 <span class="sr-only">Previous clip</span>
               </button>
               <button type="button" data-step="next" class="arrow-btn">
-                <svg viewBox="0 0 76 46" aria-hidden="true">
-                  <path class="frame" pathLength="100" d="M10 .5H75.5V35.5L65.5 45.5H.5V10.5Z" />
-                  <g class="arrow">
-                    <line class="shaft" x1="22" y1="23" x2="52" y2="23" />
-                    <polyline points="46,17 52,23 46,29" />
-                  </g>
+                <svg viewBox="0 0 44 36" aria-hidden="true">
+                  <path class="frame" d="M1.5 1.5V34.5L42.5 18Z" />
+                  <path class="arrow" d="M8 11V25L26 18Z" />
                 </svg>
                 <span class="sr-only">Next clip</span>
               </button>

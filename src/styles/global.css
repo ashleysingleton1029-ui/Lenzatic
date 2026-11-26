@@ -116,17 +116,17 @@ header:has(.link-draw:hover, .link-draw:focus-visible) {
   text-align: center;
 }
 
-/* ---------- Reel arrows: thin chamfered frames with a long arrow ---------- */
+/* ---------- Arrows: thin triangle outline with a small solid triangle inside ---------- */
 .arrow-btn {
   position: relative;
   display: block;
-  width: 42px;
-  height: 26px;
-  color: inherit;
+  width: 30px;
+  height: 25px;
+  color: #fff;
   -webkit-tap-highlight-color: transparent;
 }
 @media (min-width: 768px) {
-  .arrow-btn { width: 50px; height: 30px; }
+  .arrow-btn { width: 36px; height: 30px; }
 }
 .arrow-btn svg {
   position: absolute;
@@ -135,53 +135,43 @@ header:has(.link-draw:hover, .link-draw:focus-visible) {
   height: 100%;
   overflow: visible;
 }
+/* drawn pointing right; "prev" is the mirror image */
+.arrow-btn[data-step="prev"] svg {
+  transform: scaleX(-1);
+}
 .arrow-btn .frame {
   fill: none;
   stroke: currentColor;
   stroke-width: 1;
+  stroke-linejoin: miter;
   vector-effect: non-scaling-stroke;
-  opacity: 0.25;
-  transition: opacity 0.4s;
-}
-@keyframes frame-draw {
-  from { stroke-dashoffset: 100; }
-  to { stroke-dashoffset: 0; }
+  opacity: 0.55;
+  transition: stroke 0.35s ease, opacity 0.35s ease;
 }
 .arrow-btn .arrow {
-  fill: none;
-  stroke: currentColor;
-  stroke-width: 1;
-  vector-effect: non-scaling-stroke;
-  stroke-linecap: square;
-  transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
-}
-.arrow-btn .shaft {
-  transform-origin: 100% 50%;
+  fill: currentColor;
   transform-box: fill-box;
-  transform: scaleX(0.55);
+  transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1);
 }
 .arrow-btn:hover .frame,
 .arrow-btn:focus-visible .frame {
+  stroke: var(--color-gold);
   opacity: 1;
-  stroke-dasharray: 100;
-  animation: frame-draw 0.9s cubic-bezier(0.87, 0, 0.13, 1) both;
-}
-.arrow-btn:hover .shaft,
-.arrow-btn:focus-visible .shaft {
-  transform: scaleX(1);
 }
 .arrow-btn:hover .arrow,
 .arrow-btn:focus-visible .arrow {
-  transform: translateX(3px);
+  transform: translateX(2px);
 }
 .arrow-btn:active .arrow {
-  transform: translateX(6px);
-}
-.arrow-btn[data-step="prev"] svg {
-  transform: scaleX(-1);
+  transform: translateX(4px);
 }
 .arrow-btn:focus-visible {
   outline: none;
+}
+/* The reel's bottom bar uses a difference blend; switch it off while an arrow
+   is hovered so the gold shows true instead of being inverted. */
+.reel-bar:has(.arrow-btn:hover, .arrow-btn:focus-visible) {
+  mix-blend-mode: normal;
 }
 
 /* ---------- Work page: stacked cinematic strips ---------- */

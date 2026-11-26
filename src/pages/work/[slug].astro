@@ -145,24 +145,21 @@ const heroStyle = `left:calc(var(--hero-target) - ${shift}%);width:${BOX}%;max-w
       <img data-viewer-img alt="" />
       <div class="viewer-bar">
         <span data-viewer-count class="text-[10px] tracking-[0.25em] sm:text-[11px]"></span>
-        <div class="flex gap-1.5">
+        <div class="flex gap-2">
           {[
             { dir: 'prev', label: 'Previous frame' },
             { dir: 'next', label: 'Next frame' },
           ].map((b) => (
             <button type="button" data-viewer-step={b.dir} class="arrow-btn" data-step={b.dir}>
-              <svg viewBox="0 0 76 46" aria-hidden="true">
-                <path class="frame" pathLength="100" d="M10 .5H75.5V35.5L65.5 45.5H.5V10.5Z" />
-                <g class="arrow">
-                  <line class="shaft" x1="22" y1="23" x2="52" y2="23" />
-                  <polyline points="46,17 52,23 46,29" />
-                </g>
-              </svg>
+              <svg viewBox="0 0 44 36" aria-hidden="true">
+                  <path class="frame" d="M1.5 1.5V34.5L42.5 18Z" />
+                  <path class="arrow" d="M8 11V25L26 18Z" />
+                </svg>
               <span class="sr-only">{b.label}</span>
             </button>
           ))}
         </div>
-        <button type="button" data-viewer-close class="link-draw text-[10px] tracking-[0.25em] sm:text-[11px]">Close</button>
+        <button type="button" data-viewer-close class="link-draw uppercase text-[10px] tracking-[0.25em] sm:text-[11px]">Close</button>
       </div>
     </div>
 
