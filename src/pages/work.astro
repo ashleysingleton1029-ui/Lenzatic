@@ -68,7 +68,7 @@ const year = new Date().getFullYear();
                 loading={i < 2 ? 'eager' : 'lazy'}
                 decoding="async"
                 class="strip-img absolute inset-x-0 -top-[15%] h-[130%] w-full object-cover"
-                style={`object-position: ${item.focus};${item.pan ? ` left: -${item.pan}%; width: ${100 + item.pan}%; max-width: none;` : ''}`}
+                style={`object-position: ${item.focus};${item.pan ? ` left: ${item.pan > 0 ? -item.pan : 0}%; width: ${100 + Math.abs(item.pan)}%; max-width: none;` : ''}`}
               />
               {item.href && (
                 <a href={item.href} class="absolute inset-0 z-10" aria-label={`Open the ${item.title} gallery`}></a>
