@@ -75,6 +75,8 @@ const titleEl = $('[data-roll="title"]');
 const ticks = $$('[data-dial-item]');
 let current = 0;
 let renderOrder = 1;
+let clipStartedAt = performance.now();
+let advancing = false;
 
 function markTicks(i: number) {
   ticks.forEach((item) => {
@@ -92,7 +94,11 @@ function select(next: number) {
   const forward = (next - prev + count) % count;
   const dir = forward <= count / 2 ? 1 : -1;
   current = next;
+  clipStartedAt = performance.now();
+  advancing = false;
+  if (videos[next].readyState > 0) videos[next].currentTime = 0;
 
+  turnWheel(dir);
   markTicks(next);
   roll(counterEl, String(next + 1).padStart(2, '0'), dir);
   roll(titleEl, titles[next], dir, 0.1);
@@ -105,14 +111,15 @@ function select(next: number) {
 
   gsap.fromTo(
     incoming,
-    { clipPath: dir === 1 ? 'inset(100% 0% 0% 0%)' : 'inset(0% 0% 100% 0%)' },
+    // Forward: the new clip enters from the right, the same way the dial turns.
+    { clipPath: dir === 1 ? 'inset(0% 0% 0% 100%)' : 'inset(0% 100% 0% 0%)' },
     { clipPath: 'inset(0% 0% 0% 0%)', ...wipe },
   );
   gsap.fromTo(
     outgoing,
     { clipPath: 'inset(0% 0% 0% 0%)' },
     {
-      clipPath: dir === 1 ? 'inset(0% 0% 100% 0%)' : 'inset(100% 0% 0% 0%)',
+      clipPath: dir === 1 ? 'inset(0% 100% 0% 0%)' : 'inset(0% 0% 0% 100%)',
       ...wipe,
       onComplete: () => {
         if (current !== prev) videos[prev].pause();
@@ -142,7 +149,11 @@ const loop = horizontalLoop(dialItems, {
 // With a 2-clip reel the dial holds each clip twice; aim for the nearest copy.
 const slotFor = (i: number) => (dialItems.length > count ? i + count : i);
 const spin = { duration: 0.8, ease: 'power1.inOut' };
-const goTo = (i: number) => loop.toIndex(slotFor((i + count) % count), { ...spin });
+const goTo = (i: number) => {
+  const target = (i + count) % count;
+  loop.toIndex(slotFor(target), { ...spin });
+  select(target);
+};
 // Start the dial centered on clip 01.
 loop.toIndex(slotFor(0), { duration: 0 });
 
@@ -156,11 +167,92 @@ dialItems.forEach((item) => {
     }
   });
 });
-$('[data-step="prev"]')?.addEventListener('click', () => goTo(current - 1));
-$('[data-step="next"]')?.addEventListener('click', () => goTo(current + 1));
+// ---------- Camera control wheel ----------
+const cam = $('.cam');
+const wheel = $('[data-cam-wheel]');
+const ring = $('[data-cam-ring]');
+const progressEl = $<SVGCircleElement>('[data-cam-progress]');
+let ringAngle = 0;
+
+// The knurled ring turns a notch with every clip change.
+function turnWheel(dir: number) {
+  ringAngle += dir * 36;
+  if (ring) gsap.to(ring, { rotation: ringAngle, duration: spin.duration, ease: spin.ease, overwrite: true });
+}
+
+// Pressing a side of the wheel tilts it slightly, like a real rocker.
+function press(dir: number) {
+  if (!wheel || !animate) return;
+  gsap.fromTo(wheel, { rotationY: 0 }, { rotationY: dir * 9, duration: 0.07, yoyo: true, repeat: 1, ease: 'power1.out' });
+}
+
+$('[data-step="prev"]')?.addEventListener('click', () => {
+  press(-1);
+  goTo(current - 1);
+});
+$('[data-step="next"]')?.addEventListener('click', () => {
+  press(1);
+  goTo(current + 1);
+});
+
+// ---------- Auto-rotate ----------
+// Each clip plays through once, then the dial turns to the next one.
+// Off for visitors who ask for reduced motion; the center button pauses / resumes.
+let autoPlay = animate;
+let started = false;
+let holding = false;
+const LEAD = 0.45; // start the wipe just before the clip ends
+
+const centerBtn = $('[data-cam-center]');
+const centerLabel = $('[data-cam-label]');
+function setPaused(paused: boolean) {
+  autoPlay = !paused;
+  cam?.toggleAttribute('data-paused', paused);
+  centerBtn?.setAttribute('aria-pressed', String(paused));
+  if (centerLabel) centerLabel.textContent = paused ? 'Play reel' : 'Pause reel';
+  if (paused) videos[current].pause();
+  else {
+    // Pick up where the clip left off.
+    clipStartedAt = performance.now() - (videos[current].currentTime || 0) * 1000;
+    play(current);
+  }
+}
+// Reflect the starting state without touching playback.
+cam?.toggleAttribute('data-paused', !autoPlay);
+centerBtn?.setAttribute('aria-pressed', String(!autoPlay));
+if (centerLabel) centerLabel.textContent = autoPlay ? 'Pause reel' : 'Play reel';
+centerBtn?.addEventListener('click', () => setPaused(autoPlay));
+
 window.addEventListener('keydown', (e) => {
   if (e.key === 'ArrowLeft') goTo(current - 1);
   if (e.key === 'ArrowRight') goTo(current + 1);
+  if (e.key === ' ' && e.target === document.body) {
+    e.preventDefault();
+    setPaused(autoPlay);
+  }
+});
+
+// Hold off while someone is dragging the dial.
+const dialEl = $('[data-dial]');
+dialEl?.addEventListener('pointerdown', () => (holding = true));
+window.addEventListener('pointerup', () => {
+  if (!holding) return;
+  holding = false;
+  clipStartedAt = performance.now();
+});
+
+gsap.ticker.add(() => {
+  const v = videos[current];
+  const length = Number.isFinite(v.duration) && v.duration > 1 ? v.duration : 5;
+  const playing = !v.paused && v.readyState > 2;
+  const t = playing ? v.currentTime : (performance.now() - clipStartedAt) / 1000;
+  const progress = Math.min(1, t / (length - LEAD));
+  if (progressEl) progressEl.style.strokeDashoffset = String(100 - (started ? progress : 0) * 100);
+  if (!started || !autoPlay || holding || advancing || document.hidden) return;
+  if (t >= length - LEAD) {
+    advancing = true;
+    goTo(current + 1);
+  }
 });
 
 // ---------- Timecode (follows the playing clip) ----------
@@ -182,6 +274,7 @@ videos[0].addEventListener('playing', () => clips.forEach((_c, i) => i && load(i
 
 if (!animate) {
   gsap.set('[data-intro-up]', { opacity: 1 });
+  started = true;
 } else {
   const loaderTc = $('[data-loader-tc]');
   const counter = { t: 0 };
@@ -215,6 +308,11 @@ if (!animate) {
       .to('[data-clips]', { scale: 1, duration: 2.4, ease: 'power3.out' }, '<')
       .set('#preloader', { display: 'none' })
       .fromTo('[data-intro-up]', { yPercent: 120, opacity: 1 }, { yPercent: 0, duration: 1, stagger: 0.12 }, '-=1.4')
-      .fromTo('[data-mark]', { opacity: 0, scale: 0.6 }, { opacity: 1, scale: 1, duration: 1.4 }, '<0.2');
+      .fromTo('[data-mark]', { opacity: 0, scale: 0.6 }, { opacity: 1, scale: 1, duration: 1.4 }, '<0.2')
+      .add(() => {
+        started = true;
+        clipStartedAt = performance.now();
+        if (videos[0].readyState > 0) videos[0].currentTime = 0;
+      }, '-=0.6');
   });
 }

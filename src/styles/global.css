@@ -83,20 +83,223 @@ body {
   mask-image: linear-gradient(to right, transparent, #000 30%, #000 70%, transparent);
 }
 
-/* Circular prev/next buttons: the ring draws away on hover */
-.circle-btn circle {
-  stroke-dasharray: 126;
-  stroke-dashoffset: 0;
-  transition: stroke-dashoffset 0.3s cubic-bezier(0.87, 0, 0.13, 1);
+/* ---------- Camera control wheel (modelled on a mirrorless rear wheel) ---------- */
+.cam {
+  --size: 64px;
+  --noise: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='120' height='120'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='1.4' numOctaves='3' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.5  0 0 0 0 0.5  0 0 0 0 0.5  0 0 0 0.55 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+  position: relative;
+  width: var(--size);
+  height: var(--size);
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
 }
-.circle-btn:hover circle {
-  stroke-dashoffset: 126;
+@media (min-width: 768px) {
+  .cam { --size: 104px; }
 }
-.circle-btn:focus-visible circle {
-  stroke-dashoffset: 0;
+
+/* Clip progress, drawn around the wheel */
+.cam-progress {
+  position: absolute;
+  inset: -7px;
+  width: calc(100% + 14px);
+  height: calc(100% + 14px);
+  transform: rotate(-90deg);
+  overflow: visible;
 }
-.circle-btn:active > svg:last-of-type {
-  transform: scale(0.9);
+.cam-progress circle {
+  fill: none;
+  stroke: var(--color-ochre);
+  stroke-width: 1.2;
+  stroke-linecap: round;
+  stroke-dasharray: 100;
+  stroke-dashoffset: 100;
+  filter: drop-shadow(0 0 3px rgb(210 154 63 / 0.6));
+}
+
+/* Recess in the camera body */
+.cam-housing {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  padding: 4px;
+  background:
+    var(--noise),
+    radial-gradient(circle at 50% 30%, #2a2b2e 0%, #141517 55%, #08090a 100%);
+  background-blend-mode: soft-light, normal;
+  box-shadow:
+    0 14px 28px rgb(0 0 0 / 0.55),
+    0 3px 6px rgb(0 0 0 / 0.6),
+    0 0 0 1px rgb(0 0 0 / 0.85),
+    inset 0 1px 0 rgb(255 255 255 / 0.09),
+    inset 0 -1px 1px rgb(0 0 0 / 0.9);
+}
+.cam-housing::after {
+  /* machined bevel around the recess */
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  pointer-events: none;
+  background: conic-gradient(from 215deg, #8a8d92, #2a2c30 22%, #0b0c0d 48%, #2a2c30 70%, #8a8d92);
+  -webkit-mask: radial-gradient(circle, transparent 0 94%, #000 95.5% 99%, transparent 100%);
+  mask: radial-gradient(circle, transparent 0 94%, #000 95.5% 99%, transparent 100%);
+  opacity: 0.55;
+}
+.cam-housing::before {
+  /* shadowed gap the wheel sits in */
+  content: "";
+  position: absolute;
+  inset: 3px;
+  border-radius: 50%;
+  background: #030303;
+  box-shadow: inset 0 2px 3px rgb(0 0 0 / 0.95), 0 1px 0 rgb(255 255 255 / 0.06);
+}
+
+.cam-wheel {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  transform: perspective(240px);
+  transform-style: preserve-3d;
+}
+
+/* Knurled rotating ring */
+.cam-ring,
+.cam-ring-shine {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  -webkit-mask: radial-gradient(circle, transparent 0 64%, #000 65.5%);
+  mask: radial-gradient(circle, transparent 0 64%, #000 65.5%);
+}
+.cam-ring {
+  background:
+    repeating-conic-gradient(from 0deg, #070708 0deg 1.1deg, #4a4d52 1.7deg 2.3deg, #24262a 2.9deg 3.4deg, #101113 3.8deg 4.5deg),
+    #16171a;
+  box-shadow: inset 0 0 0 1px rgb(0 0 0 / 0.8);
+}
+.cam-ring-shine {
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 50% 50%, transparent 64%, rgb(0 0 0 / 0.55) 66%, transparent 72%, transparent 92%, rgb(0 0 0 / 0.6) 100%),
+    conic-gradient(from 200deg, transparent 0deg, rgb(255 255 255 / 0.38) 50deg, transparent 105deg, transparent 185deg, rgb(255 255 255 / 0.12) 240deg, transparent 290deg);
+  mix-blend-mode: screen;
+}
+
+/* Flat face with printed markings */
+.cam-face {
+  position: absolute;
+  inset: 17%;
+  border-radius: 50%;
+  background:
+    var(--noise),
+    radial-gradient(circle at 50% 28%, #24262a 0%, #151618 60%, #0d0e10 100%);
+  background-blend-mode: soft-light, normal;
+  box-shadow:
+    0 0 0 1px #050506,
+    inset 0 1px 0 rgb(255 255 255 / 0.07),
+    inset 0 -2px 4px rgb(0 0 0 / 0.7);
+}
+.cam-print {
+  position: absolute;
+  font-family: var(--font-sans);
+  font-weight: 500;
+  font-size: 5.5px;
+  letter-spacing: 0.06em;
+  line-height: 1;
+  color: #e6e6e3;
+  opacity: 0.82;
+  text-shadow: 0 0 0.4px rgb(255 255 255 / 0.4);
+}
+@media (min-width: 768px) {
+  .cam-print { font-size: 7px; }
+}
+.cam-print-t { top: 9%; left: 50%; transform: translateX(-50%); }
+.cam-print-b { bottom: 9%; left: 50%; transform: translateX(-50%); }
+.cam-print-l { left: 10%; top: 50%; transform: translateY(-50%) scaleX(0.8); }
+.cam-print-r { right: 10%; top: 50%; transform: translateY(-50%) scaleX(0.8); }
+
+/* Invisible press zones over the left and right of the wheel */
+.cam-zone {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 50%;
+  cursor: pointer;
+  background: transparent;
+  outline: none;
+}
+.cam-zone-l { left: 0; border-radius: 9999px 0 0 9999px; }
+.cam-zone-r { right: 0; border-radius: 0 9999px 9999px 0; }
+.cam-zone:focus-visible {
+  box-shadow: inset 0 0 0 1px rgb(210 154 63 / 0.8);
+}
+
+/* Domed center button */
+.cam-center {
+  position: absolute;
+  inset: 34%;
+  border-radius: 50%;
+  cursor: pointer;
+  background:
+    var(--noise),
+    radial-gradient(circle at 38% 28%, #45474c 0%, #222428 38%, #121315 75%, #0a0b0c 100%);
+  background-blend-mode: soft-light, normal;
+  box-shadow:
+    0 0 0 1.5px #040405,
+    0 0 0 2.5px rgb(255 255 255 / 0.05),
+    0 2px 3px rgb(0 0 0 / 0.85),
+    inset 0 1px 1px rgb(255 255 255 / 0.22),
+    inset 0 -2px 3px rgb(0 0 0 / 0.65);
+  transition: transform 0.08s ease-out, box-shadow 0.08s ease-out;
+  outline: none;
+}
+.cam-center::after {
+  /* specular glint */
+  content: "";
+  position: absolute;
+  left: 22%;
+  top: 14%;
+  width: 40%;
+  height: 26%;
+  border-radius: 50%;
+  background: radial-gradient(ellipse, rgb(255 255 255 / 0.28), transparent 70%);
+  filter: blur(0.6px);
+  pointer-events: none;
+}
+.cam-center:active {
+  transform: scale(0.93);
+  box-shadow:
+    0 0 0 1.5px #040405,
+    0 0 0 2.5px rgb(255 255 255 / 0.04),
+    0 1px 1px rgb(0 0 0 / 0.85),
+    inset 0 1px 1px rgb(255 255 255 / 0.12),
+    inset 0 -1px 2px rgb(0 0 0 / 0.75);
+}
+.cam-center:focus-visible {
+  box-shadow: 0 0 0 1.5px var(--color-ochre), inset 0 1px 1px rgb(255 255 255 / 0.22);
+}
+/* Printed pause / play glyph */
+.cam-center-icon {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 26%;
+  height: 26%;
+  transform: translate(-50%, -50%);
+  opacity: 0.8;
+  background:
+    linear-gradient(#e6e6e3, #e6e6e3) left / 32% 100% no-repeat,
+    linear-gradient(#e6e6e3, #e6e6e3) right / 32% 100% no-repeat;
+}
+.cam[data-paused] .cam-center-icon {
+  background: #e6e6e3;
+  clip-path: polygon(15% 0, 100% 50%, 15% 100%);
+}
+.cam[data-paused] .cam-progress circle {
+  stroke: #8a8a86;
+  filter: none;
 }
 
 @media (prefers-reduced-motion: reduce) {
