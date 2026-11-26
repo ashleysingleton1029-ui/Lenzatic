@@ -11,7 +11,6 @@ const { gallery } = Astro.props as { gallery: Gallery };
 const { slug, title, hero, frames } = gallery;
 const pageTitle = `${title} — Lenzatic`;
 const description = `${title} cinematography by Roberto Lee Cortes.`;
-const pad = (n: number) => String(n).padStart(2, '0');
 
 // Place the hero subject toward the left on any screen (24% across on phones,
 // 28% on larger screens; see .gallery-hero in global.css). The image box is 140%
@@ -98,7 +97,6 @@ const heroStyle = `left:calc(var(--hero-target) - ${shift}%);width:${BOX}%;max-w
                   aria-label={copy ? undefined : `View frame ${i + 1}: ${frame.alt}`}
                 >
                   <img src={src.thumb} alt="" loading={i < 6 && !copy ? 'eager' : 'lazy'} decoding="async" style={frame.focus ? `object-position:${frame.focus}` : undefined} />
-                  <span class="film-code" aria-hidden="true">{pad(i + 1)}</span>
                 </button>
               );
             }),

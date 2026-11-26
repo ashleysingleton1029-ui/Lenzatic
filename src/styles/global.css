@@ -274,21 +274,6 @@ header:has(.link-draw:hover, .link-draw:focus-visible) {
 .film-frame:focus-visible {
   box-shadow: 0 0 0 1px var(--color-gold);
 }
-/* frame number printed in the sprocket margin, like edge code */
-.film-code {
-  position: absolute;
-  left: -15px;
-  top: 6px;
-  font-size: 7px;
-  letter-spacing: 0.1em;
-  color: rgb(214 223 224 / 0.45);
-  writing-mode: vertical-rl;
-  transform: rotate(180deg);
-}
-@media (min-width: 768px) {
-  .film-code { left: -19px; font-size: 8px; }
-}
-
 /* ---------- Gallery page: measuring ruler (drives the film strip) ---------- */
 .ruler {
   --ink: 214 223 224;

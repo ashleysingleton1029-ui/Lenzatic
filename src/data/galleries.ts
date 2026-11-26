@@ -55,7 +55,6 @@ export const galleries: Gallery[] = [
       { alt: 'Aerial view of a long bridge stretching across the sea' },
       { alt: 'Aerial view of a cable-stayed bridge over the sea' },
       { alt: 'Masked figure wading through misty golden water' },
-      { alt: 'ITNA001 key art: a masked figure walking toward camera under the Lenzatic title' },
     ],
   },
 ];
