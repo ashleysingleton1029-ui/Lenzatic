@@ -1,15 +1,13 @@
 ---
 import '../styles/global.css';
+import { reel, manifestUrl, posterUrl, STREAM_BASE } from '../data/reel';
 
 const title = 'Lenzatic — Cinematography by Roberto Lee Cortes';
-const description =
-  'Lenzatic is the cinematography portfolio of Roberto Lee Cortes. New site coming soon.';
-const contact = {
-  name: 'Roberto Lee Cortes',
-  email: 'lenzatic@gmail.com',
-};
-const headline = 'Coming Soon';
-const year = new Date().getFullYear();
+const description = 'Lenzatic is the cinematography portfolio of Roberto Lee Cortes.';
+const email = 'lenzatic@gmail.com';
+const pad = (n: number) => String(n).padStart(2, '0');
+// The looping dial needs at least 3 slots to wrap smoothly, so a 2-clip reel is shown twice.
+const dialSlots = reel.length === 2 ? [...reel, ...reel] : reel;
 ---
 
 <!doctype html>
@@ -19,7 +17,7 @@ const year = new Date().getFullYear();
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{title}</title>
     <meta name="description" content={description} />
-    <meta name="theme-color" content="#0b0e12" />
+    <meta name="theme-color" content="#000000" />
     <link rel="canonical" href="https://www.lenzatic.com/" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 
@@ -30,15 +28,15 @@ const year = new Date().getFullYear();
     <meta property="og:image" content="https://www.lenzatic.com/images/og.jpg" />
     <meta name="twitter:card" content="summary_large_image" />
 
+    <link rel="preconnect" href={STREAM_BASE} crossorigin />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
       href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Jost:wght@300;400;500&display=swap"
       rel="stylesheet"
     />
-    <link rel="preload" as="image" href="/images/hero.webp" imagesrcset="/images/hero-1000.webp 1000w, /images/hero.webp 2000w" imagesizes="100vw" />
+    <link rel="preload" as="image" href={posterUrl(reel[0].id)} />
 
-    <!-- Turn on animations only when JS runs and the visitor hasn't asked for reduced motion -->
     <script is:inline>
       if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
         document.documentElement.classList.add('js');
@@ -46,9 +44,9 @@ const year = new Date().getFullYear();
     </script>
   </head>
 
-  <body class="overflow-hidden font-sans">
+  <body class="overflow-hidden bg-black font-sans">
     <!-- Preloader: two shutters that part like a letterbox opening -->
-    <div id="preloader" class="pointer-events-none fixed inset-0 z-50 hidden [.js_&]:block" aria-hidden="true">
+    <div id="preloader" class="pointer-events-none fixed inset-0 z-[5000] hidden [.js_&]:block" aria-hidden="true">
       <div data-shutter="top" class="absolute inset-x-0 top-0 h-1/2 bg-ink"></div>
       <div data-shutter="bottom" class="absolute inset-x-0 bottom-0 h-1/2 bg-ink"></div>
       <div data-loader-content class="absolute inset-0 flex flex-col items-center justify-center gap-6">
@@ -63,101 +61,143 @@ const year = new Date().getFullYear();
       </div>
     </div>
 
-    <main class="relative h-svh min-h-[560px] w-full overflow-hidden">
-      <!-- Hero image -->
-      <div data-hero-media class="absolute inset-0 will-change-transform">
-        <img
-          src="/images/hero.jpg"
-          srcset="/images/hero-1000.webp 1000w, /images/hero.webp 2000w"
-          sizes="100vw"
-          alt="Roberto Lee Cortes holding a cinema camera at a chain-link gate in the desert at golden hour"
-          class="h-full w-full object-cover object-[52%_50%]"
-          fetchpriority="high"
-          decoding="async"
-        />
+    <main id="home" class="relative h-svh min-h-[520px] w-full touch-none overflow-hidden">
+      <h1 class="sr-only">Lenzatic — Roberto Lee Cortes, Cinematographer</h1>
+
+      <!-- Reel: one full-screen layer per clip, revealed with a vertical wipe -->
+      <div data-clips class="absolute inset-0">
+        {reel.map((clip, i) => (
+          <div
+            data-clip={i}
+            class="absolute inset-0 overflow-hidden bg-black"
+            style={`clip-path: ${i === 0 ? 'inset(0% 0% 0% 0%)' : 'inset(100% 0% 0% 0%)'}; z-index: ${i === 0 ? 1 : 0}`}
+          >
+            <img
+              data-poster
+              src={posterUrl(clip.id)}
+              alt=""
+              class="absolute inset-0 h-full w-full object-cover transition-opacity duration-700"
+              loading={i === 0 ? 'eager' : 'lazy'}
+              decoding="async"
+            />
+            <video
+              data-src={manifestUrl(clip.id)}
+              class="absolute inset-0 h-full w-full object-cover"
+              muted
+              loop
+              playsinline
+              preload="none"
+              aria-label={`${clip.title} reel`}
+            ></video>
+          </div>
+        ))}
+        <div class="pointer-events-none absolute inset-0 z-[4000] bg-gradient-to-b from-black/40 via-transparent to-black/85"></div>
       </div>
 
-      <!-- Grade overlays for legibility -->
-      <div class="pointer-events-none absolute inset-0 bg-gradient-to-t from-ink via-ink/15 to-ink/40"></div>
-      <div class="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_45%,rgba(11,14,18,0.75)_100%)]"></div>
-      <div class="pointer-events-none absolute inset-0 bg-gradient-to-r from-ink/60 via-transparent to-transparent"></div>
-
-      <!-- Viewfinder frame -->
-      <div data-frame class="pointer-events-none absolute inset-4 sm:inset-8" aria-hidden="true">
-        <span data-reveal data-corner class="absolute left-0 top-0 h-6 w-6 border-l border-t border-mist/60"></span>
-        <span data-reveal data-corner class="absolute right-0 top-0 h-6 w-6 border-r border-t border-mist/60"></span>
-        <span data-reveal data-corner class="absolute bottom-0 left-0 h-6 w-6 border-b border-l border-mist/60"></span>
-        <span data-reveal data-corner class="absolute bottom-0 right-0 h-6 w-6 border-b border-r border-mist/60"></span>
-        <span data-reveal data-corner class="absolute left-1/2 top-1/2 hidden h-4 w-4 -translate-x-1/2 -translate-y-1/2 sm:block">
-          <span class="absolute left-1/2 top-0 h-full w-px bg-mist/40"></span>
-          <span class="absolute left-0 top-1/2 h-px w-full bg-mist/40"></span>
-        </span>
-      </div>
+      <!-- Brand mark, centered over the reel -->
+      <img
+        data-mark
+        src="/images/lenzatic-mark.svg"
+        alt=""
+        aria-hidden="true"
+        class="pointer-events-none absolute left-1/2 top-1/2 z-[4400] w-9 -translate-x-1/2 -translate-y-1/2 drop-shadow-[0_2px_14px_rgba(0,0,0,0.35)] sm:w-12"
+      />
 
       <!-- Top HUD -->
-      <header class="absolute inset-x-0 top-0 z-10 flex items-start justify-between px-8 pt-9 sm:px-14 sm:pt-14">
-        <div data-reveal class="flex items-center gap-2 font-mono text-[10px] tracking-[0.25em] text-mist/80 sm:text-[11px]">
-          <span class="rec-dot inline-block h-2 w-2 rounded-full bg-[#e5483b]"></span>
-          <span>REC</span>
-          <span data-timecode class="ml-2 hidden tabular-nums text-mist/60 sm:inline">00:00:00:00</span>
+      <header class="absolute inset-x-0 top-0 z-[4500] flex items-start justify-between px-6 pt-7 text-white mix-blend-difference sm:px-12 sm:pt-10">
+        <div class="overflow-hidden">
+          <div data-intro-up class="flex items-center gap-2 font-mono text-[10px] tracking-[0.25em] sm:text-[11px]">
+            <span class="rec-dot inline-block h-2 w-2 rounded-full bg-white"></span>
+            <span>REC</span>
+            <span data-timecode class="ml-2 hidden tabular-nums opacity-70 sm:inline">00:00:00:00</span>
+          </div>
         </div>
-        <h1 class="absolute right-8 top-9 sm:left-1/2 sm:right-auto sm:top-14 sm:-translate-x-1/2">
-          <span class="sr-only">Lenzatic</span>
-          <span data-reveal data-hero-logo class="logo-mask block w-[min(38vw,220px)] bg-mist"></span>
-        </h1>
-        <div data-reveal class="hidden text-right font-mono text-[11px] tracking-[0.25em] text-mist/60 md:block">
-          <p>23.976 FPS</p>
-          <p>2.39 : 1</p>
+        <div class="absolute left-1/2 top-7 -translate-x-1/2 overflow-hidden sm:top-10">
+          <span data-intro-up class="logo-mask block w-[min(36vw,200px)] bg-white" role="img" aria-label="Lenzatic"></span>
+        </div>
+        <div class="overflow-hidden">
+          <a
+            data-intro-up
+            href={`mailto:${email}?subject=Project%20inquiry`}
+            class="link-draw block font-mono text-[10px] uppercase tracking-[0.25em] sm:text-[11px]"
+          ><span class="sm:hidden">Contact</span><span class="hidden sm:inline">Get in touch</span></a>
         </div>
       </header>
 
-      <!-- Bottom content -->
-      <section class="absolute inset-x-0 bottom-0 z-10 flex flex-col gap-10 px-8 pb-10 sm:px-14 sm:pb-16 lg:flex-row lg:items-end lg:justify-between">
-        <div class="max-w-2xl">
-          <p data-reveal class="mb-4 flex items-center gap-3 font-mono text-[11px] uppercase tracking-[0.3em] text-ochre">
-            <span data-rule class="inline-block h-px w-10 origin-left bg-ochre"></span>
-            Cinematography Portfolio
-          </p>
-          <h2 class="text-[clamp(2.75rem,9vw,7.5rem)] font-light uppercase leading-[0.9] tracking-[0.12em] text-mist" aria-label={headline}>
-            {headline.split(' ').map((word) => (
-              <span class="inline-block overflow-hidden whitespace-nowrap pb-2 pr-[0.3em] align-bottom" aria-hidden="true">
-                {[...word].map((ch) => (
-                  <span data-char class="inline-block">{ch}</span>
-                ))}
-              </span>
-            ))}
+      <!-- Bottom: counter + title, dial, prev/next -->
+      <div class="absolute inset-x-0 bottom-0 z-[4500] grid grid-cols-[1fr_auto_1fr] items-end gap-y-5 px-6 pb-5 text-white mix-blend-difference sm:px-12 sm:pb-8">
+        <div class="col-span-3 flex flex-col gap-1 md:col-span-1">
+          <div class="overflow-hidden">
+            <div data-intro-up class="flex gap-1 font-mono text-[11px] tracking-[0.2em]">
+              <span data-roll="counter" class="relative inline-block w-[2.2ch] overflow-hidden text-center"><span class="block">01</span></span>
+              <span class="opacity-60">/</span>
+              <span class="opacity-60">{pad(reel.length)}</span>
+            </div>
+          </div>
+          <h2 class="overflow-hidden">
+            <span data-intro-up class="block">
+              <span data-roll="title" class="relative block h-[1.2em] overflow-hidden text-2xl font-light uppercase leading-[1.2] tracking-[0.14em] sm:text-4xl"><span class="block">{reel[0].title}</span></span>
+            </span>
           </h2>
-          <p data-reveal class="mt-5 max-w-md text-base font-light leading-relaxed text-mist/75 sm:text-lg">
-            A new collection of cinematic work is in post&#8209;production. Until then, let's talk about your next project.
-          </p>
         </div>
 
-        <address data-reveal class="not-italic lg:text-right">
-          <p class="mb-3 font-mono text-[11px] uppercase tracking-[0.3em] text-haze">Contact</p>
-          <p class="text-lg font-normal tracking-[0.08em] text-mist sm:text-xl">{contact.name}</p>
-          <p class="mt-2 text-base font-light text-mist/80">
-            <a class="link-draw pb-0.5" href={`mailto:${contact.email}`}>{contact.email}</a>
-          </p>
-          <a
-            data-magnetic
-            href={`mailto:${contact.email}?subject=Project%20inquiry`}
-            class="group mt-6 inline-flex items-center gap-3 border border-mist/40 px-6 py-3 font-mono text-[11px] uppercase tracking-[0.3em] text-mist backdrop-blur-sm transition-colors duration-300 hover:border-ochre hover:bg-ochre hover:text-ink"
-          >
-            Get in touch
-            <span class="transition-transform duration-300 group-hover:translate-x-1" aria-hidden="true">&rarr;</span>
-          </a>
-        </address>
-      </section>
+        <div class="md:hidden"></div>
 
-      <p data-reveal class="absolute bottom-3 left-1/2 z-10 -translate-x-1/2 whitespace-nowrap font-mono text-[9px] tracking-[0.3em] text-mist/40 sm:bottom-6">
-        &copy; {year} LENZATIC
-      </p>
+        <div class="overflow-hidden pt-2">
+          <nav data-intro-up aria-label="Reel" class="pointer-events-auto mx-auto w-48 md:w-96">
+            <div data-dial class="dial-mask flex w-full cursor-grab select-none flex-row items-end overflow-hidden active:cursor-grabbing">
+              {dialSlots.map((clip, n) => {
+                const i = n % reel.length;
+                return (
+                  <div
+                    role="button"
+                    tabindex="0"
+                    data-dial-item={i}
+                    aria-label={`Show ${clip.title}`}
+                    class="relative flex h-14 w-24 shrink-0 flex-col items-center justify-center pt-6 md:w-44"
+                  >
+                    <span class="absolute left-1/2 top-0 -translate-x-1/2 font-mono text-[10px] tracking-[0.15em]">{pad(i + 1)}</span>
+                    <span class="flex h-8 w-full flex-row justify-between" aria-hidden="true">
+                      <span class="my-auto h-2 w-px bg-current"></span>
+                      <span class="my-auto h-2 w-px bg-current"></span>
+                      <span class="my-auto h-2 w-px bg-current"></span>
+                      <span data-tick class={`h-full w-px origin-center bg-current transition-transform duration-[1500ms] ease-[cubic-bezier(0.87,0,0.13,1)] ${i === 0 ? 'scale-y-100' : 'scale-y-[0.3]'}`}></span>
+                      <span class="my-auto h-2 w-px bg-current"></span>
+                      <span class="my-auto h-2 w-px bg-current"></span>
+                      <span class="my-auto h-2 w-0"></span>
+                    </span>
+                  </div>
+                );
+              })}
+            </div>
+          </nav>
+        </div>
+
+        <div class="overflow-hidden justify-self-end">
+          <div data-intro-up class="pointer-events-auto flex gap-1">
+            {[
+              { dir: 'prev', label: 'Previous clip', path: 'M10 3 5 8l5 5' },
+              { dir: 'next', label: 'Next clip', path: 'M6 3l5 5-5 5' },
+            ].map((b) => (
+              <button type="button" data-step={b.dir} class="circle-btn group relative h-9 w-9 md:h-11 md:w-11">
+                <svg class="absolute inset-0 h-full w-full" viewBox="0 0 44 44" aria-hidden="true">
+                  <circle cx="22" cy="22" r="20" fill="none" stroke="currentColor" stroke-width="1" />
+                </svg>
+                <svg class="relative mx-auto h-3 w-3 md:h-4 md:w-4" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.25" aria-hidden="true">
+                  <path d={b.path} />
+                </svg>
+                <span class="sr-only">{b.label}</span>
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
     </main>
 
     <div class="grain hidden [.js_&]:block" aria-hidden="true"></div>
 
     <script>
-      import '../scripts/landing.ts';
+      import '../scripts/home.ts';
     </script>
   </body>
 </html>

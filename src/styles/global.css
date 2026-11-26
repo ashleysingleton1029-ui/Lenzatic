@@ -72,8 +72,31 @@ body {
 
 /* Elements start hidden and GSAP reveals them. Without JS or with
    reduced motion, they stay visible. */
-.js [data-reveal] {
+.js [data-reveal],
+.js [data-intro-up] {
   opacity: 0;
+}
+
+/* Reel dial: ticks fade out toward both edges */
+.dial-mask {
+  -webkit-mask-image: linear-gradient(to right, transparent, #000 30%, #000 70%, transparent);
+  mask-image: linear-gradient(to right, transparent, #000 30%, #000 70%, transparent);
+}
+
+/* Circular prev/next buttons: the ring draws away on hover */
+.circle-btn circle {
+  stroke-dasharray: 126;
+  stroke-dashoffset: 0;
+  transition: stroke-dashoffset 0.3s cubic-bezier(0.87, 0, 0.13, 1);
+}
+.circle-btn:hover circle {
+  stroke-dashoffset: 126;
+}
+.circle-btn:focus-visible circle {
+  stroke-dashoffset: 0;
+}
+.circle-btn:active > svg:last-of-type {
+  transform: scale(0.9);
 }
 
 @media (prefers-reduced-motion: reduce) {

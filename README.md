@@ -14,8 +14,12 @@ npm run build    # outputs to dist/
 
 ## Where things live
 
-- `src/pages/index.astro`: the Coming Soon page (copy and contact details at the top)
-- `src/scripts/landing.ts`: all animations (preloader, letterbox reveal, parallax)
+- `src/pages/index.astro`: home page with the full-screen video reel and dial
+- `src/data/reel.ts`: the reel clips (Cloudflare Stream ids and titles), in dial order
+- `src/scripts/home.ts`: reel behaviour (clip wipes, dial, video loading, intro)
+- `src/scripts/horizontalLoop.js`: the draggable, endlessly looping dial
+- `src/pages/coming-soon.astro` + `src/scripts/landing.ts`: the Coming Soon page
+- `public/images/lenzatic-mark.svg`: gold center mark (`lenzatic-mark-light.svg` is the grey version)
 - `src/styles/global.css`: brand colors, fonts, film grain
 - `public/images/`: hero photo and logo
 
