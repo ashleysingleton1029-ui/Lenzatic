@@ -1,0 +1,113 @@
+---
+import '../styles/global.css';
+import Header from '../components/Header.astro';
+import { work, workImage } from '../data/work';
+
+const title = 'Work — Lenzatic';
+const description = 'Selected cinematography by Roberto Lee Cortes.';
+const pad = (n: number) => String(n).padStart(2, '0');
+const year = new Date().getFullYear();
+---
+
+<!doctype html>
+<html lang="en" style="background:#000">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <meta name="theme-color" content="#000000" />
+    <link rel="canonical" href="https://www.lenzatic.com/work" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://www.lenzatic.com/work" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={`https://www.lenzatic.com/images/work/${work[0].slug}.jpg`} />
+    <meta name="twitter:card" content="summary_large_image" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Jost:wght@300;400;500&display=swap" rel="stylesheet" />
+    <link rel="preload" as="font" type="font/woff2" href="/fonts/Salena.woff2" crossorigin />
+
+    <script is:inline>
+      if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        document.documentElement.classList.add('js');
+      }
+    </script>
+  </head>
+
+  <body class="font-display uppercase text-white" style="background:#000">
+    <Header current="work" fixed />
+
+    <main>
+      <!-- Page heading -->
+      <section class="flex items-end justify-between px-6 pb-8 pt-28 sm:px-12 sm:pb-12 sm:pt-40">
+        <div>
+          <div class="overflow-hidden">
+            <p data-intro-up class="mb-3 flex items-center gap-3 text-[10px] tracking-[0.3em] text-gold sm:text-[11px]">
+              <span class="inline-block h-px w-8 bg-gold"></span>
+              Galleries
+            </p>
+          </div>
+          <div class="overflow-hidden">
+            <h1 data-intro-up class="text-lg tracking-[0.24em] sm:text-2xl">Selected Work</h1>
+          </div>
+        </div>
+        <div class="overflow-hidden">
+          <p data-intro-up class="text-[10px] tracking-[0.25em] opacity-60 sm:text-[11px]">
+            {[...pad(work.length)].map((d) => <span class="digit">{d}</span>)} Reels
+          </p>
+        </div>
+      </section>
+
+      <!-- Cinematic strips -->
+      <ol class="strips flex flex-col gap-1.5 sm:gap-2" aria-label="Galleries">
+        {work.map((item, i) => {
+          const img = workImage(item.slug);
+          return (
+            <li class="strip group relative overflow-hidden bg-[#0b0b0b]" data-strip>
+              <img
+                data-parallax
+                src={img.src}
+                srcset={img.srcset}
+                sizes="100vw"
+                alt={item.alt}
+                loading={i < 2 ? 'eager' : 'lazy'}
+                decoding="async"
+                class="strip-img absolute inset-x-0 -top-[15%] h-[130%] w-full object-cover"
+                style={`object-position: ${item.focus}`}
+              />
+              <div class="pointer-events-none absolute inset-0 bg-gradient-to-r from-black/55 via-black/10 to-transparent"></div>
+              <div class="pointer-events-none absolute inset-x-0 bottom-0 h-2/3 bg-gradient-to-t from-black/50 to-transparent"></div>
+
+              <div class="absolute inset-x-0 bottom-0 flex items-end justify-between px-6 pb-4 sm:px-12 sm:pb-6">
+                <div class="overflow-hidden">
+                  <div data-strip-label class="flex items-baseline gap-4 sm:gap-6">
+                    <span class="text-[10px] tracking-[0.2em] opacity-70 sm:text-[11px]">{[...pad(i + 1)].map((d) => <span class="digit">{d}</span>)}</span>
+                    <h2 class="text-sm tracking-[0.22em] sm:text-base">{item.title}</h2>
+                  </div>
+                </div>
+                <span class="strip-ratio hidden text-[10px] tracking-[0.25em] opacity-0 transition-opacity duration-500 group-hover:opacity-60 sm:block">2.39 : 1</span>
+              </div>
+            </li>
+          );
+        })}
+      </ol>
+
+      <!-- Footer -->
+      <footer class="flex flex-col gap-6 px-6 pb-10 pt-20 text-[10px] tracking-[0.25em] sm:flex-row sm:items-end sm:justify-between sm:px-12 sm:pb-12 sm:pt-28 sm:text-[11px]">
+        <a href="/" class="link-draw self-start">&larr;&nbsp; Back to reel</a>
+        <a href="mailto:lenzatic@gmail.com?subject=Project%20inquiry" class="link-draw self-start normal-case tracking-[0.12em]">lenzatic@gmail.com</a>
+        <p class="opacity-50">&copy; {[...String(year)].map((d) => <span class="digit">{d}</span>)} Lenzatic</p>
+      </footer>
+    </main>
+
+    <div class="grain hidden [.js_&]:block" aria-hidden="true"></div>
+
+    <script>
+      import '../scripts/work.ts';
+    </script>
+  </body>
+</html>

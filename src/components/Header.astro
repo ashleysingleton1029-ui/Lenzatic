@@ -1,0 +1,51 @@
+---
+// Top bar shared by every page: REC timecode, logo (links home), View work, Get in touch.
+interface Props {
+  current?: 'home' | 'work';
+  fixed?: boolean;
+}
+const { current = 'home', fixed = false } = Astro.props;
+const email = 'lenzatic@gmail.com';
+---
+
+<header
+  class:list={[
+    fixed ? 'fixed' : 'absolute',
+    'inset-x-0 top-0 z-[4500] flex items-start justify-between px-6 pt-7 text-white mix-blend-difference sm:px-12 sm:pt-10',
+  ]}
+>
+  <!-- REC + timecode (from small tablets up; phones show the logo here instead) -->
+  <div class="hidden overflow-hidden sm:block">
+    <div data-intro-up class="flex items-center gap-2 text-[11px] tracking-[0.25em]">
+      <span class="rec-dot inline-block h-2 w-2 rounded-full bg-white"></span>
+      <span>REC</span>
+      <span data-timecode class="ml-2 opacity-70">{[..."00:00:00:00"].map((ch) => <span class={ch === ':' ? 'inline-block w-[0.4em] text-center' : 'digit'}>{ch}</span>)}</span>
+    </div>
+  </div>
+
+  <a
+    href="/"
+    class="overflow-hidden sm:absolute sm:left-1/2 sm:top-10 sm:-translate-x-1/2"
+    aria-label="Lenzatic — home"
+  >
+    <span data-intro-up class="logo-mask block w-[min(32vw,200px)] bg-white"></span>
+  </a>
+
+  <nav class="flex items-start gap-5 sm:gap-8" aria-label="Site">
+    <div class="overflow-hidden">
+      <a
+        data-intro-up
+        href="/work"
+        aria-current={current === 'work' ? 'page' : undefined}
+        class:list={['link-draw block text-[10px] tracking-[0.25em] sm:text-[11px]', current === 'work' && 'is-current']}
+      ><span class="sm:hidden">Work</span><span class="hidden sm:inline">View work</span></a>
+    </div>
+    <div class="overflow-hidden">
+      <a
+        data-intro-up
+        href={`mailto:${email}?subject=Project%20inquiry`}
+        class="link-draw block text-[10px] tracking-[0.25em] sm:text-[11px]"
+      ><span class="sm:hidden">Contact</span><span class="hidden sm:inline">Get in touch</span></a>
+    </div>
+  </nav>
+</header>

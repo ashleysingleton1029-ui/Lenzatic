@@ -84,6 +84,9 @@ body {
   background-size: 100% 1px;
   color: var(--color-gold);
 }
+.link-draw.is-current {
+  background-size: 100% 1px;
+}
 /* The header text uses a difference blend; switch it off while the link is
    hovered so the gold shows true instead of being inverted. */
 header:has(.link-draw:hover, .link-draw:focus-visible) {
@@ -178,7 +181,32 @@ header:has(.link-draw:hover, .link-draw:focus-visible) {
   outline: none;
 }
 
-@media (prefers-reduced-motion: reduce) {
+/* ---------- Work page: stacked cinematic strips ---------- */
+.strip {
+  height: clamp(120px, 22vh, 220px);
+  transition: height 1s cubic-bezier(0.16, 1, 0.3, 1);
+}
+@media (min-width: 768px) {
+  .strip { height: clamp(170px, 27vh, 300px); }
+}
+.strip-img {
+  transition: filter 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+}
+/* On a mouse or trackpad, the hovered strip opens up and the rest dim */
+@media (hover: hover) and (pointer: fine) {
+  .strip:hover {
+    height: clamp(320px, 62vh, 680px);
+  }
+  .strips:hover .strip:not(:hover) .strip-img {
+    filter: brightness(0.45) saturate(0.6);
+  }
+}
+/* Strips wipe in from the right as they scroll into view (JS reveals them) */
+.js .strip {
+  clip-path: inset(0% 0% 0% 100%);
+}
+
+ {
   .grain,
   .rec-dot {
     animation: none;

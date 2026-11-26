@@ -18,6 +18,9 @@ npm run build    # outputs to dist/
 - `src/data/reel.ts`: the reel clips (Cloudflare Stream ids and titles), in dial order
 - `src/scripts/home.ts`: reel behaviour (clip wipes, dial, video loading, intro)
 - `src/scripts/horizontalLoop.js`: the draggable, endlessly looping dial
+- `src/pages/work.astro` + `src/scripts/work.ts`: Work page of stacked cinematic strips
+- `src/data/work.ts`: the Work strips (titles, image crop focus), top to bottom; images live in `public/images/work/`
+- `src/components/Header.astro`: top bar shared by every page
 - `src/pages/coming-soon.astro` + `src/scripts/landing.ts`: the Coming Soon page
 - `public/images/lenzatic-mark.svg`: gold center mark (`lenzatic-mark-light.svg` is the grey version)
 - `public/fonts/Salena.woff2`: Salena display font (see the licence note below)
