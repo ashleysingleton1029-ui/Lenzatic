@@ -226,7 +226,7 @@ export const galleries: Gallery[] = [
       width: 2000,
       alt: 'Vermilion flycatcher taking off from a bare branch, wings spread, against a warm golden background',
       subjectX: 48,
-      focusY: '40%',
+      focusY: '28%',
     },
     frames: [
       { alt: 'White sand dune curving into a pale blue sky' },
