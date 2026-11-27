@@ -31,11 +31,12 @@ export const galleries: Gallery[] = [
   {
     slug: 'narrative',
     title: 'Narrative',
-    side: 'right',
+    side: 'left',
     hero: {
       width: 2560,
       alt: 'Figure in a cybernetic helmet with a glowing orange ring, standing before a hazy golden sea',
       subjectX: 47,
+      mobileX: 53,
       focusY: '40%',
     },
     frames: [
@@ -68,7 +69,7 @@ export const galleries: Gallery[] = [
   {
     slug: 'aerial',
     title: 'Aerial',
-    side: 'left',
+    side: 'right',
     hero: {
       width: 2000,
       alt: 'Top-down view of a weathered wooden pier with rusted floats, cutting diagonally across dark water',
