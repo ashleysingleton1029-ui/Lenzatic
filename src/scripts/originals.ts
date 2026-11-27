@@ -22,7 +22,7 @@ const line = $('[data-line]');
 const status = $('[data-status]');
 const pct = $('[data-pct]');
 const signal = $('[data-signal]');
-const GLYPHS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ/\\|<>-_=+';
+const GLYPHS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ/|-_=+';
 
 if (!animate) {
   gsap.set('[data-intro-up]', { opacity: 1 });
@@ -47,20 +47,23 @@ if (!animate) {
     .fromTo('[data-rule]', { scaleX: 0 }, { scaleX: 1, duration: 1.4, ease: 'expo.inOut' }, 0.4)
     // 1. "Awaiting its debut" decodes in, letter by letter
     .call(() => { status.textContent = 'Receiving'; }, [], 0.6)
-    .to(line, { duration: 2.2, scrambleText: { text: 'Awaiting Its Debut', chars: GLYPHS, revealDelay: 0.4, speed: 0.5 }, ease: 'none' }, 0.6)
-    .to(counter, { v: 62, duration: 2.6, ease: 'power2.out', onUpdate: setPct }, 0.6)
-    .to(signal, { width: '62%', duration: 2.6, ease: 'power2.out' }, 0.6)
+    .set(line, { opacity: 0.18 }, 0.6)
+    .to(line, { duration: 1.1, scrambleText: { text: 'Awaiting Its Debut', chars: GLYPHS, revealDelay: 0.15, speed: 0.4 }, ease: 'none' }, 0.6)
+    .to(line, { opacity: 1, duration: 0.5, ease: 'power2.out' }, 1.5)
+    .to(counter, { v: 62, duration: 1.5, ease: 'power2.out', onUpdate: setPct }, 0.6)
+    .to(signal, { width: '62%', duration: 1.5, ease: 'power2.out' }, 0.6)
     .call(() => { status.textContent = 'Standby'; })
     // hold
-    .to({}, { duration: 1.8 })
+    .to({}, { duration: 1.6 })
     // 2. Transition: glitch, collapse, scramble into "Coming Soon"
     .to(line, { skewX: -12, x: -6, duration: 0.06, repeat: 5, yoyo: true, ease: 'none' })
-    .to(line, { filter: 'blur(6px)', opacity: 0.35, letterSpacing: '0.6em', duration: 0.45, ease: 'power3.in' }, '<0.15')
+    .to(line, { filter: 'blur(4px)', opacity: 0.15, letterSpacing: '0.45em', duration: 0.35, ease: 'power3.in' }, '<0.1')
     .call(() => { status.textContent = 'Decoding'; })
-    .to(line, { duration: 1.6, scrambleText: { text: 'Coming Soon', chars: GLYPHS, revealDelay: 0.3, speed: 0.6 }, ease: 'none' })
-    .to(line, { filter: 'blur(0px)', opacity: 1, letterSpacing: '0.18em', skewX: 0, x: 0, duration: 1.4 }, '<')
-    .to(counter, { v: 100, duration: 1.6, ease: 'power2.inOut', onUpdate: setPct }, '<')
-    .to(signal, { width: '100%', duration: 1.6, ease: 'power2.inOut' }, '<')
+    .to(line, { duration: 0.9, scrambleText: { text: 'Coming Soon', chars: GLYPHS, revealDelay: 0.1, speed: 0.4 }, ease: 'none' })
+    .to(line, { filter: 'blur(0px)', letterSpacing: '0.18em', skewX: 0, x: 0, duration: 0.9 }, '<')
+    .to(line, { opacity: 1, duration: 0.5, ease: 'power2.out' }, '<0.6')
+    .to(counter, { v: 100, duration: 1.1, ease: 'power2.inOut', onUpdate: setPct }, '<-0.6')
+    .to(signal, { width: '100%', duration: 1.1, ease: 'power2.inOut' }, '<')
     .fromTo(line, { textShadow: '0 0 0px rgba(190,146,64,0)' }, { textShadow: '0 0 28px rgba(190,146,64,0.55)', duration: 0.5, yoyo: true, repeat: 1, ease: 'power2.out' })
     .call(() => { status.textContent = 'Coming soon'; });
 }
