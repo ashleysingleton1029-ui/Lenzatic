@@ -283,10 +283,17 @@ function driveDial(progress: number) {
 
 gsap.ticker.add(() => {
   const v = videos[current];
-  const length = clipLength(v);
-  const playing = !v.paused && v.readyState > 2;
-  const t = playing ? clipTime(v) : (performance.now() - clipStartedAt) / 1000;
-  const progress = Math.min(1, Math.max(0, t / (length - LEAD)));
+  const hold = Number(v.dataset.hold);
+  let progress: number;
+  if (hold > 0) {
+    // Fixed screen time by the clock: the clip is on screen for exactly `hold` seconds.
+    progress = Math.min(1, Math.max(0, (performance.now() - clipStartedAt) / 1000 / hold));
+  } else {
+    const length = clipLength(v);
+    const playing = !v.paused && v.readyState > 2;
+    const t = playing ? clipTime(v) : (performance.now() - clipStartedAt) / 1000;
+    progress = Math.min(1, Math.max(0, t / (length - LEAD)));
+  }
   const now = performance.now();
   if (!started || !autoPlay || holding || document.hidden || now < freeAt) return;
   driveDial(progress);

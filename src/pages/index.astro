@@ -87,6 +87,7 @@ const dialSlots = reel.length === 2 ? [...reel, ...reel] : reel;
               data-src={manifestUrl(clip.id)}
               data-start={clip.start}
               data-length={clip.length}
+              data-hold={clip.hold}
               class="absolute inset-0 h-full w-full object-cover"
               muted
               loop
