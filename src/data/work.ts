@@ -12,6 +12,7 @@ export interface WorkStrip {
 }
 
 export const work: WorkStrip[] = [
+  { slug: '00-originals', title: 'Originals', alt: 'Rider in leathers beside a sportbike in a moody workshop, light pouring under a roll-up door', focus: '50% 40%' },
   { slug: '01-narrative', title: 'Narrative', href: '/work/narrative', alt: 'Bearded man in a hat and tactical vest standing in a dim hallway, pistol at his side', focus: '50% 19%' },
   { slug: '02-aerial', title: 'Aerial', href: '/work/aerial', alt: 'Hazy golden sunset over a desert city valley and mountain range', focus: '50% 46%' },
   { slug: '03-motorsports', title: 'Motorsport', href: '/work/motorsport', alt: 'Black sports car drifting with tyre smoke pouring from the rear wheel', focus: '62% 58%' },
