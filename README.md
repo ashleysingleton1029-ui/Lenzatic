@@ -23,7 +23,6 @@ npm run build    # outputs to dist/
 - `src/pages/work/[slug].astro` + `src/scripts/gallery.ts`: gallery pages (hero, moving film strip, measuring ruler, full-screen viewer)
 - `src/data/galleries.ts`: gallery content; images in `public/images/<gallery>/` (`hero.*`, then `01-960.webp` + `01.webp`, `02-…` in strip order)
 - `src/components/Header.astro`: top bar shared by every page
-- `src/pages/coming-soon.astro` + `src/scripts/landing.ts`: the Coming Soon page
 - `public/images/lenzatic-mark.svg`: gold center mark (`lenzatic-mark-light.svg` is the grey version)
 - `public/fonts/Salena.woff2`: Salena display font (see the licence note below)
 - `src/styles/global.css`: brand colors, fonts, film grain
