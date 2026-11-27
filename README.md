@@ -44,8 +44,7 @@ npm run build    # outputs to dist/
 
 ## Font licence: Salena
 
-The Salena file in `public/fonts/` is Typebae's **demo** version: "free for personal use only and
-not permitted for commercial purposes", and its digits 0–5 are replaced with a watermark. Before
-the site goes live, buy a commercial/web licence (hello@typebae.com), convert the licensed font to
-`public/fonts/Salena.woff2`, and remove the `unicode-range` line in `src/styles/global.css` so
-Salena's own numbers are used (numbers currently fall back to Jost).
+A commercial licence for Salena has been purchased. The file in `public/fonts/` is still the demo
+build, whose digits 0–5 are watermarked, so numbers fall back to Jost. To use Salena's own numbers,
+convert the licensed font file to `public/fonts/Salena.woff2` and remove the `unicode-range` line in
+`src/styles/global.css`.
