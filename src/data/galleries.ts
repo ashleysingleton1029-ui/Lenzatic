@@ -224,9 +224,9 @@ export const galleries: Gallery[] = [
     side: 'right',
     hero: {
       width: 2000,
-      alt: 'Dragonfly perched on the tip of a web-draped twig against a soft green background',
-      subjectX: 53,
-      focusY: '42%',
+      alt: 'Vermilion flycatcher taking off from a bare branch, wings spread, against a warm golden background',
+      subjectX: 48,
+      focusY: '40%',
     },
     frames: [
       { alt: 'White sand dune curving into a pale blue sky' },
