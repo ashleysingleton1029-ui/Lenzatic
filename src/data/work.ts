@@ -16,7 +16,7 @@ export const work: WorkStrip[] = [
   { slug: '02-aerial', title: 'Aerial', href: '/work/aerial', alt: 'Hazy golden sunset over a desert city valley and mountain range', focus: '50% 46%' },
   { slug: '03-motorsports', title: 'Motorsport', href: '/work/motorsport', alt: 'Black sports car drifting with tyre smoke pouring from the rear wheel', focus: '62% 58%' },
   { slug: '04-portrait', title: 'Portrait', href: '/work/portrait', alt: 'Woman in a canvas jacket at dusk before an abandoned desert house', focus: '50% 31%', pan: -3 },
-  { slug: '05-wildlife', title: 'Nature', alt: 'Condor soaring past blurred canyon walls', focus: '50% 39%', pan: 7 },
+  { slug: '05-wildlife', title: 'Nature', href: '/work/nature', alt: 'Condor soaring past blurred canyon walls', focus: '50% 39%', pan: 7 },
 ];
 
 export const workImage = (slug: string) => ({
