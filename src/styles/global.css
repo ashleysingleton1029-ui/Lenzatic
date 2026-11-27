@@ -430,6 +430,27 @@ header:has(.link-draw:hover, .link-draw:focus-visible) {
   .viewer-bar { padding: 28px 48px; }
 }
 
+/* ---------- Originals teaser page ---------- */
+.orig-bg img { filter: grayscale(0.35) brightness(0.55) blur(2px); }
+.orig-grid {
+  background-image:
+    linear-gradient(rgb(255 255 255 / 0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgb(255 255 255 / 0.035) 1px, transparent 1px);
+  background-size: 48px 48px;
+  -webkit-mask-image: radial-gradient(ellipse at center, #000 20%, transparent 75%);
+  mask-image: radial-gradient(ellipse at center, #000 20%, transparent 75%);
+}
+.orig-scan {
+  height: 22vh;
+  background: linear-gradient(to bottom, transparent, rgb(190 146 64 / 0.06) 85%, rgb(190 146 64 / 0.22) 100%);
+  border-bottom: 1px solid rgb(190 146 64 / 0.25);
+}
+.orig-line { min-height: 1em; white-space: nowrap; will-change: filter, transform; }
+.orig-standby { animation: rec 1.6s ease-in-out infinite; }
+@media (max-width: 480px) {
+  .orig-line { white-space: normal; }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .grain,
   .rec-dot {
